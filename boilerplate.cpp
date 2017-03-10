@@ -25,8 +25,7 @@
 // specify that we want the OpenGL core profile before including GLFW headers
 //#include "middleware\glad\include\glad\glad.h"
 #include "glad/glad.h"
-#include <GLFW/glfw3.h>
-
+#include <glfw/glfw3.h>
 #include "camera.h"
 #define PI 3.14159265359
 
@@ -51,7 +50,7 @@ float scaleFactor = 1.f;
 
 Camera* activeCamera;
 
-Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 7));
+Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
 // Remember to start this at false for final submission and demo
 bool animate = true;
 bool drawTrack = false;
@@ -480,13 +479,13 @@ void generateCylinder(vector<vec3>* positions, vector<vec3>* normals, vector<uns
 void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength){
 	vec3 nxnyz = vec3(-sideLength, 0, sideLength);
 	vec3 nxnynz = vec3(-sideLength, 0, -sideLength);
-	vec3 nxynz = vec3(-sideLength, 0*sideLength, -sideLength);
-	vec3 nxyz = vec3(-sideLength, 0*sideLength, sideLength);
+	vec3 nxynz = vec3(-sideLength, sideLength, -sideLength);
+	vec3 nxyz = vec3(-sideLength, sideLength, sideLength);
 	
 	vec3 xnyz = vec3(sideLength, 0, sideLength);
 	vec3 xnynz = vec3(sideLength, 0, -sideLength);
-	vec3 xynz = vec3(sideLength, 0*sideLength, -sideLength);
-	vec3 xyz = vec3(sideLength, 0*sideLength, sideLength);
+	vec3 xynz = vec3(sideLength, sideLength, -sideLength);
+	vec3 xyz = vec3(sideLength, sideLength, sideLength);
 	
 	vertices->push_back(nxnyz); 
 	vertices->push_back(nxnynz);
@@ -585,7 +584,7 @@ int main(int argc, char *argv[])
 	generateBox(&points, &normals, &indices, 0.05);
 	loadBuffer(vbo, points, normals, indices);
 	
-	Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 7));
+	Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
 	
 	activeCamera = &cam;
 	

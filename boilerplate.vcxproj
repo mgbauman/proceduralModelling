@@ -81,11 +81,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\middleware\glfw\include;$(ProjectDir)..\middleware\glad\include;$(ProjectDir)..\middleware\stb;$(ProjectDir)..\middleware\glm-0.9.8.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\middleware\glfw\include;$(ProjectDir)\middleware\glad\include;$(ProjectDir)..\middleware\stb;$(ProjectDir)\middleware\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\middleware\glfw\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\middleware\glfw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -133,11 +133,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\middleware\glad\src\glad.c" />
     <ClCompile Include="boilerplate.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="middleware\glad\src\glad.c" />
-    <ClCompile Include="middleware\glm\detail\dummy.cpp" />
     <ClCompile Include="middleware\glm\detail\glm.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -260,6 +258,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="middleware\glfw\glfw3.h" />
+    <ClInclude Include="middleware\glfw\glfw3native.h" />
     <ClInclude Include="middleware\freetype\include\freetype\config\ftconfig.h" />
     <ClInclude Include="middleware\freetype\include\freetype\config\ftheader.h" />
     <ClInclude Include="middleware\freetype\include\freetype\config\ftmodule.h" />
@@ -501,6 +501,9 @@
     <Image Include="texture_earth_surface.jpg" />
     <Image Include="texture_moon.jpg" />
     <Image Include="texture_sun.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="middleware\glfw\glfw3.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

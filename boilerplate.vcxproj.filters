@@ -21,19 +21,13 @@
     <ClCompile Include="boilerplate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\middleware\glad\src\glad.c">
-      <Filter>Source Files\External</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="middleware\glad\src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="middleware\glm\detail\dummy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="middleware\glm\detail\glm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="middleware\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1092,6 +1086,12 @@
     <ClInclude Include="middleware\stb\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="middleware\glfw\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="middleware\glfw\glfw3native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="stars_milkyway.jpg">
@@ -1106,5 +1106,8 @@
     <Image Include="texture_sun.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="middleware\glfw\glfw3.lib" />
   </ItemGroup>
 </Project>
