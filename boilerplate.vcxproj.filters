@@ -30,6 +30,9 @@
     <ClCompile Include="middleware\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
@@ -1090,6 +1093,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="middleware\glfw\glfw3native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

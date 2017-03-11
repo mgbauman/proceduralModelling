@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="boilerplate.cpp" />
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="middleware\glad\src\glad.c" />
     <ClCompile Include="middleware\glm\detail\glm.cpp" />
@@ -257,6 +258,7 @@
     <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="middleware\glfw\glfw3.h" />
     <ClInclude Include="middleware\glfw\glfw3native.h" />

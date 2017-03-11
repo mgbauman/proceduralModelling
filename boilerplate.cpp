@@ -27,6 +27,8 @@
 #include "glad/glad.h"
 #include <glfw/glfw3.h>
 #include "camera.h"
+#include "Box.h"
+
 #define PI 3.14159265359
 
 using namespace std;
@@ -497,20 +499,18 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	vertices->push_back(xynz);
 	vertices->push_back(xyz);
 	
-	
-	
 	for( int i =0; i<1; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
 	}
 	for( int i =0; i<2; i++){
 		normals->push_back(vec3(0,0,1));
-	}
-	for( int i =0; i<2; i++){
+	}for( int i =0; i<2; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
 	}
 	for( int i =0; i<2; i++){
 		normals->push_back(vec3(0,0,1));
 	}
+	
 	for( int i =0; i<1; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
 	}
@@ -543,6 +543,38 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 
 float magnitude(vec3 v){
 	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+
+
+/*
+
+Points naming convention
+
+z1y1______________z2y2
+|                    |
+|                    |
+|                    |>>>>>>
+|                    |
+|                    |
+z3y3______________z4y4
+
+*/
+void generateNewFaces(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, Box box) {
+
+}
+
+void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indices) {
+    vec3 topLeftBack = vertices->at(box.topLeftBack);
+    vec3 topLeftFront = vertices->at(box.topLeftFront);
+    vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
+    vec3 bottomLeftFront = vertices->at(box.bottomLeftFront);
+
+    // Generate offsets
+    // Use the offsets on the current set of points to generate new points
+    // Push back new points to vertices
+    // Generate the new faces -using the new 4 indices and the old 4 indices
+
 }
 
 // ==========================================================================
