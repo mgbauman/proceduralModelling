@@ -30,7 +30,11 @@
     <ClCompile Include="middleware\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Box.cpp">
+=======
+    <ClCompile Include="MCNode.cpp">
+>>>>>>> 48a6fa4ea60a028facb8fac844badd395bf030c7
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1095,7 +1099,11 @@
     <ClInclude Include="middleware\glfw\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Box.h">
+=======
+    <ClInclude Include="MCNode.h">
+>>>>>>> 48a6fa4ea60a028facb8fac844badd395bf030c7
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
