@@ -1,34 +1,35 @@
-﻿Build started 3/10/2017 4:31:59 PM.
-     1>Project "C:\Users\mgbauman\Source\Repos\proceduralModelling\boilerplate.vcxproj" on node 2 (Build target(s)).
+﻿Build started 3/10/2017 6:21:38 PM.
+     1>Project "C:\procmod\proceduralModelling\boilerplate.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /IC:\Users\mgbauman\Source\Repos\proceduralModelling\\middleware\glfw\include /IC:\Users\mgbauman\Source\Repos\proceduralModelling\\middleware\glad\include /IC:\Users\mgbauman\Source\Repos\proceduralModelling\..\middleware\stb /IC:\Users\mgbauman\Source\Repos\proceduralModelling\\middleware\ /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\\" /Fd"C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt boilerplate.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /IC:\procmod\proceduralModelling\\middleware\glfw\include /IC:\procmod\proceduralModelling\\middleware\glad\include /IC:\procmod\proceduralModelling\..\middleware\stb /IC:\procmod\proceduralModelling\\middleware\ /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"C:\procmod\proceduralModelling\dontSubmit\inter\Debug\\" /Fd"C:\procmod\proceduralModelling\dontSubmit\inter\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt boilerplate.cpp
          boilerplate.cpp
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(47): warning C4305: 'initializing': truncation from 'double' to 'float'
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(129): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(372): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(373): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(374): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(424): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(425): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(445): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(446): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(584): warning C4305: 'argument': truncation from 'double' to 'float'
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(572): warning C4101: 'vboSquare': unreferenced local variable
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(572): warning C4101: 'vboSphere': unreferenced local variable
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(571): warning C4101: 'vaoSphere': unreferenced local variable
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(571): warning C4101: 'vaoBox': unreferenced local variable
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(572): warning C4101: 'vboBox': unreferenced local variable
-     1>c:\users\mgbauman\source\repos\proceduralmodelling\boilerplate.cpp(571): warning C4101: 'vaoSquare': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(48): warning C4305: 'initializing': truncation from 'double' to 'float'
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(130): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(373): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(374): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(375): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(425): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(426): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(446): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(447): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(592): warning C4305: 'argument': truncation from 'double' to 'float'
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(580): warning C4101: 'vboSquare': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(580): warning C4101: 'vboSphere': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(579): warning C4101: 'vaoSphere': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(579): warning C4101: 'vaoBox': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(580): warning C4101: 'vboBox': unreferenced local variable
+     1>c:\procmod\proceduralmodelling\boilerplate.cpp(579): warning C4101: 'vaoSquare': unreferenced local variable
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\mgbauman\Source\Repos\proceduralModelling\\middleware\glfw opengl32.lib glfw3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\boilerplate.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\boilerplate.lib" /MACHINE:X86 C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\boilerplate.obj
-         C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\camera.obj
-         C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\glad.obj
-         C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\glm.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\procmod\proceduralModelling\\middleware\glfw opengl32.lib glfw3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.lib" /MACHINE:X86 C:\procmod\proceduralModelling\dontSubmit\inter\Debug\boilerplate.obj
+         C:\procmod\proceduralModelling\dontSubmit\inter\Debug\camera.obj
+         C:\procmod\proceduralModelling\dontSubmit\inter\Debug\MCNode.obj
+         C:\procmod\proceduralModelling\dontSubmit\inter\Debug\glad.obj
+         C:\procmod\proceduralModelling\dontSubmit\inter\Debug\glm.obj
          middleware\glfw\glfw3.lib
      1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-         boilerplate.vcxproj -> C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe
-     1>Done Building Project "C:\Users\mgbauman\Source\Repos\proceduralModelling\boilerplate.vcxproj" (Build target(s)).
+         boilerplate.vcxproj -> C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe
+     1>Done Building Project "C:\procmod\proceduralModelling\boilerplate.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.51
+Time Elapsed 00:00:01.48

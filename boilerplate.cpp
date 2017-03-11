@@ -27,6 +27,7 @@
 #include "glad/glad.h"
 #include <glfw/glfw3.h>
 #include "camera.h"
+#include "MCNode.h"
 #define PI 3.14159265359
 
 using namespace std;
@@ -545,6 +546,13 @@ float magnitude(vec3 v){
 	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
+vector<vec3> generateOffsets(vector<MCNode*>& nodevec)
+{
+    //double decisionx = ((double)rand() / (RAND_MAX));
+    vector<vec3> temp;
+    return temp;
+}
+
 // ==========================================================================
 // PROGRAM ENTRY POINT
 
@@ -592,6 +600,40 @@ int main(int argc, char *argv[])
 	mat4 perspectiveMatrix = perspective(radians(80.f), 1.f, 0.1f, 20.f);
 	
     mat4 model = mat4(1.f);
+
+    // Setup Markov Chain Tree for Generation
+    MCNode* levelNode = new MCNode(0.4f, 0.2f, 0.4f);
+    MCNode* inNode = new MCNode(0.4f, 0.2f, 0.4f);
+    MCNode* outNode = new MCNode(0.2f, 0.4f, 0.4f, inNode, nullptr, levelNode);
+    outNode->outnode = outNode;
+    inNode->innode = inNode;
+    inNode->outnode = outNode;
+    inNode->levelnode = levelNode;
+    levelNode->innode = inNode;
+    levelNode->outnode = outNode;
+    levelNode->levelnode = levelNode;
+
+    
+    // Pointer to current node during traversal
+    // z1,y1 = top left; z2,y2 = top right
+    // z3,y3 = bottom left; z4,y4 = bottom right
+    MCNode* z1currentNode = levelNode;
+    MCNode* y1currentNode = levelNode;
+    MCNode* z2currentNode = levelNode;
+    MCNode* y2currentNode = levelNode;
+    MCNode* z3currentNode = levelNode;
+    MCNode* y3currentNode = levelNode;
+    MCNode* z4currentNode = levelNode;
+    MCNode* y4currentNode = levelNode;
+    vector<MCNode*> nodePointers;
+    nodePointers.push_back(z1currentNode);
+    nodePointers.push_back(y1currentNode);
+    nodePointers.push_back(z2currentNode);
+    nodePointers.push_back(y2currentNode);
+    nodePointers.push_back(z3currentNode);
+    nodePointers.push_back(y3currentNode);
+    nodePointers.push_back(z4currentNode);
+    nodePointers.push_back(y4currentNode);
 
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))

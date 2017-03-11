@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="boilerplate.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="MCNode.cpp" />
     <ClCompile Include="middleware\glad\src\glad.c" />
     <ClCompile Include="middleware\glm\detail\glm.cpp" />
   </ItemGroup>
@@ -258,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="MCNode.h" />
     <ClInclude Include="middleware\glfw\glfw3.h" />
     <ClInclude Include="middleware\glfw\glfw3native.h" />
     <ClInclude Include="middleware\freetype\include\freetype\config\ftconfig.h" />
