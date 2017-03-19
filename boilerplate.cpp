@@ -549,13 +549,13 @@ z1y1______________z2y2
 z3y3______________z4y4
 
 */
-void generateNewFaces(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, Box box) {
+void generateNewFaces(vector<vec3>* vertices, vector<unsigned int>* indices, Box box) {
 
 
 
 }
 
-void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indices) {
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
     vec3 topLeftBack = vertices->at(box.topLeftBack);
     vec3 topLeftFront = vertices->at(box.topLeftFront);
     vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
@@ -566,12 +566,68 @@ void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indi
     vec3 bottomRightBack = vertices->at(box.bottomRightBack);
     vec3 bottomRightFront = vertices->at(box.bottomRightFront);
 
-
-
     // Generate offsets
     // Use the offsets on the current set of points to generate new points
     // Push back new points to vertices
     // Push back new colors to normals
+
+    vector<vec3> offsets = generateOffsets(nodevec, box);
+
+    topLeftBack += offsets[0];
+    topLeftFront += offsets[1];
+    bottomLeftBack += offsets[2];
+    bottomLeftFront += offsets[3];
+
+    //T1
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(box.topLeftFront);
+
+    //T2
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size()+3);
+    indices->push_back(box.topLeftFront);
+
+    //T3
+    indices->push_back(box.topLeftBack);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(box.topLeftFront);
+
+    //T4
+    indices->push_back(box.topLeftBack);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 2);
+
+    //T5
+    indices->push_back(box.topLeftBack);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(vertices->size() + 2);
+
+    //T6
+    indices->push_back(box.topLeftBack);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(box.bottomLeftBack);
+
+    //T7
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(vertices->size()+1);
+
+    //T8
+    indices->push_back(box.bottomLeftBack);
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(vertices->size() + 1);
+
+    vertices->push_back(bottomLeftFront);
+    vertices->push_back(bottomLeftBack);
+    vertices->push_back(topLeftBack);
+    vertices->push_back(topLeftFront);
+
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+
 
     // Generate the new faces -using the new 4 indices and the old 4 indices
     //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
