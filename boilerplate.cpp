@@ -46,7 +46,7 @@ bool leftmousePressed = false;
 bool rightmousePressed = false;
 //int t = 0;
 float g = 0.000981*2;
-
+float offsetScale = 0.2f;
 float scaleFactor = 1.f;
 
 Camera* activeCamera;
@@ -549,15 +549,17 @@ float magnitude(vec3 v){
 Points naming convention
 
 z1y1______________z2y2
-|                    |
-|                    |
-|                    |>>>>>>
-|                    |
-|                    |
+|                    |              ^y
+|                    |              |
+|                    |>>>>>>        |
+|                    |              |
+|                    |              |---------->z
 z3y3______________z4y4
 
 */
 void generateNewFaces(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, Box box) {
+
+
 
 }
 
@@ -572,10 +574,145 @@ void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indi
     // Push back new points to vertices
     // Generate the new faces -using the new 4 indices and the old 4 indices
 }
-vector<vec3> generateOffsets(vector<MCNode*>& nodevec)
+vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox)
 {
-    //double decisionx = ((double)rand() / (RAND_MAX));
+    float xoffset = -offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
     vector<vec3> temp;
+    vec3 offsets;
+    float direction, zoffset, yoffset;
+
+    // Top Left Point 1
+    zoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(0)->in)
+        nodevec.at(0) = nodevec.at(0)->innode;
+    else if (direction < nodevec.at(0)->in + nodevec.at(0)->out)
+    {
+        zoffset = -zoffset;
+        nodevec.at(0) = nodevec.at(0)->outnode;
+    }
+    else
+    {
+        zoffset = 0.0f;
+        nodevec.at(0) = nodevec.at(0)->levelnode;
+    }
+
+    yoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(1)->in)
+    {
+        yoffset = -yoffset;
+        nodevec.at(1) = nodevec.at(1)->innode;
+    }
+    else if (direction < nodevec.at(1)->in + nodevec.at(1)->out)
+        nodevec.at(1) = nodevec.at(1)->outnode;
+    else
+    {
+        yoffset = 0.0f;
+        nodevec.at(1) = nodevec.at(1)->levelnode;
+    }
+    offsets = vec3(xoffset, yoffset, zoffset);
+    temp.push_back(offsets);
+
+    // Top Right Point 2
+    zoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(2)->in)
+    {
+        zoffset = -zoffset;
+        nodevec.at(2) = nodevec.at(2)->innode;
+    }
+    else if (direction < nodevec.at(2)->in + nodevec.at(2)->out)
+        nodevec.at(2) = nodevec.at(2)->outnode;
+    else
+    {
+        zoffset = 0.0f;
+        nodevec.at(2) = nodevec.at(2)->levelnode;
+    }
+
+    yoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(3)->in)
+    {
+        yoffset = -yoffset;
+        nodevec.at(3) = nodevec.at(3)->innode;
+    }
+    else if (direction < nodevec.at(3)->in + nodevec.at(3)->out)
+        nodevec.at(3) = nodevec.at(3)->outnode;
+    else
+    {
+        yoffset = 0.0f;
+        nodevec.at(3) = nodevec.at(3)->levelnode;
+    }
+    offsets = vec3(xoffset, yoffset, zoffset);
+    temp.push_back(offsets);
+
+    // Bottom Left Point 3
+    zoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(4)->in)
+        nodevec.at(4) = nodevec.at(4)->innode;
+    else if (direction < nodevec.at(4)->in + nodevec.at(4)->out)
+    {
+        zoffset = -zoffset;
+        nodevec.at(4) = nodevec.at(4)->outnode;
+    }
+    else
+    {
+        zoffset = 0.0f;
+        nodevec.at(4) = nodevec.at(4)->levelnode;
+    }
+
+    yoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(5)->in)
+        nodevec.at(5) = nodevec.at(5)->innode;
+    else if (direction < nodevec.at(5)->in + nodevec.at(5)->out)
+    {
+        yoffset = -yoffset;
+        nodevec.at(5) = nodevec.at(5)->outnode;
+    }
+    else
+    {
+        yoffset = 0.0f;
+        nodevec.at(5) = nodevec.at(5)->levelnode;
+    }
+    offsets = vec3(xoffset, yoffset, zoffset);
+    temp.push_back(offsets);
+
+    // Bottom Right Point 4
+    zoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(6)->in)
+    {
+        zoffset = -zoffset;
+        nodevec.at(6) = nodevec.at(6)->innode;
+    }
+    else if (direction < nodevec.at(6)->in + nodevec.at(6)->out)
+        nodevec.at(6) = nodevec.at(6)->outnode;
+    else
+    {
+        zoffset = 0.0f;
+        nodevec.at(6) = nodevec.at(6)->levelnode;
+    }
+
+    yoffset = offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    direction = ((float)rand() / (RAND_MAX));
+    if (direction < nodevec.at(7)->in)
+        nodevec.at(7) = nodevec.at(7)->innode;
+    else if (direction < nodevec.at(7)->in + nodevec.at(7)->out)
+    {
+        yoffset = -yoffset;
+        nodevec.at(7) = nodevec.at(7)->outnode;
+    }
+    else
+    {
+        yoffset = 0.0f;
+        nodevec.at(7) = nodevec.at(7)->levelnode;
+    }
+    offsets = vec3(xoffset, yoffset, zoffset);
+    temp.push_back(offsets);
+
     return temp;
 }
 
