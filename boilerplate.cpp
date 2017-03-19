@@ -568,7 +568,7 @@ void generateNewFaces(vector<vec3>* vertices, vector<vec3>* normals, vector<unsi
 
 }
 
-void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indices) {
+void createNewPoints(Box& box, vector<vec3>* vertices, vector<unsigned int>* indices) {
     vec3 topLeftBack = vertices->at(box.topLeftBack);
     vec3 topLeftFront = vertices->at(box.topLeftFront);
     vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
@@ -812,13 +812,18 @@ int main(int argc, char *argv[])
     nodePointers.push_back(z4currentNode);
     nodePointers.push_back(y4currentNode);
 
+    for (int i = 0; i < 10; i++)
+    {
+        createNewPoints(initialBox, &points, &indices, nodePointers);
+    }
+
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		//Clear color and depth buffers (Haven't covered yet)
 		
 		loadUniforms(program, winRatio*perspectiveMatrix*cam.getMatrix(),scale(model, vec3(scaleFactor)));
-		
+        loadBuffer(vbo, points, normals, indices);
 		render(vao, 0, indices.size());
 		
         // scene is rendered to the back buffer, so swap to front for display
