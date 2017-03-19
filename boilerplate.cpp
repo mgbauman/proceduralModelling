@@ -477,26 +477,27 @@ void generateCylinder(vector<vec3>* positions, vector<vec3>* normals, vector<uns
 	}
 }
 
-void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength){
-	vec3 nxnyz = vec3(-sideLength, 0, sideLength);
-	vec3 nxnynz = vec3(-sideLength, 0, -sideLength);
-	vec3 nxynz = vec3(-sideLength, sideLength, -sideLength);
-	vec3 nxyz = vec3(-sideLength, sideLength, sideLength);
+void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength, Box * box){
+
+	vec3 bottomLeftFront = vec3(-sideLength, -sideLength/2, sideLength);
+	vec3 bottomLeftBack = vec3(-sideLength, -sideLength/2, -sideLength);
+	vec3 topLeftBack = vec3(-sideLength, sideLength/2, -sideLength);
+	vec3 topLeftFront = vec3(-sideLength, sideLength/2, sideLength);
 	
-	vec3 xnyz = vec3(sideLength, 0, sideLength);
-	vec3 xnynz = vec3(sideLength, 0, -sideLength);
-	vec3 xynz = vec3(sideLength, sideLength, -sideLength);
-	vec3 xyz = vec3(sideLength, sideLength, sideLength);
+	vec3 bottomRightFront = vec3(sideLength, -sideLength/2, sideLength);
+	vec3 bottomRightBack = vec3(sideLength, -sideLength/2, -sideLength);
+	vec3 topRightBack = vec3(sideLength, sideLength/2, -sideLength);
+	vec3 topRightFront = vec3(sideLength, sideLength/2, sideLength);
 	
-	vertices->push_back(nxnyz); 
-	vertices->push_back(nxnynz);
-	vertices->push_back(nxynz);
-	vertices->push_back(nxyz);
+	vertices->push_back(bottomLeftFront); 
+	vertices->push_back(bottomLeftBack);
+	vertices->push_back(topLeftBack);
+	vertices->push_back(topLeftFront);
 	
-	vertices->push_back(xnyz);
-	vertices->push_back(xnynz);
-	vertices->push_back(xynz);
-	vertices->push_back(xyz);
+	vertices->push_back(bottomRightFront);
+	vertices->push_back(bottomRightBack);
+	vertices->push_back(topRightBack);
+	vertices->push_back(topRightFront);
 	
 	for( int i =0; i<1; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
@@ -513,7 +514,6 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	for( int i =0; i<1; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
 	}
-	
 	
 	//TOP
 	indices->push_back(3);indices->push_back(2);indices->push_back(6);
@@ -538,6 +538,11 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	//BOTTOM
 	indices->push_back(0);indices->push_back(1);indices->push_back(5);
 	indices->push_back(0);indices->push_back(5);indices->push_back(4);
+
+    box->updateLeft(2, 3, 1, 0);
+    box->updateRight(6, 7, 5, 4);
+    box->sideLength = sideLength;
+
 }
 
 float magnitude(vec3 v){
@@ -567,10 +572,17 @@ void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indi
     vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
     vec3 bottomLeftFront = vertices->at(box.bottomLeftFront);
 
+    vec3 topRightBack = vertices->at(box.topRightBack);
+    vec3 topRightFront = vertices->at(box.topRightFront);
+    vec3 bottomRightBack = vertices->at(box.bottomRightBack);
+    vec3 bottomRightFront = vertices->at(box.bottomRightFront);
+
     // Generate offsets
     // Use the offsets on the current set of points to generate new points
     // Push back new points to vertices
     // Generate the new faces -using the new 4 indices and the old 4 indices
+    //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
+    //   then updating each sides indices to the next set (ie old -> new)
 }
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec)
 {
@@ -615,10 +627,12 @@ int main(int argc, char *argv[])
 	vector<vec3> points, normals;
 	vector<unsigned int> indices;
 	
-	generateBox(&points, &normals, &indices, 0.05);
+    Box initialBox = Box();
+
+	generateBox(&points, &normals, &indices, 3.f, &initialBox);
 	loadBuffer(vbo, points, normals, indices);
 	
-	Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
+	Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 10));
 	
 	activeCamera = &cam;
 	

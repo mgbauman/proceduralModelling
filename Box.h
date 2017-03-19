@@ -6,15 +6,27 @@
 
 class Box {
 public:
+    Box();
     Box(unsigned int, unsigned int topLeftFront, unsigned int bottomLeftBack, unsigned int bottomLeftFront);
+    Box(unsigned int topLeftBack, unsigned int topLeftFront, unsigned int bottomLeftBack, unsigned int bottomLeftFront, 
+             unsigned int topRightBack, unsigned int topRightFront, unsigned int bottomRightBack, unsigned int bottomRightFront);
+    ~Box();
 
-    //Add indices for the right side as well
+    float sideLength;
+    
     unsigned int topLeftBack;
     unsigned int topLeftFront;
     unsigned int bottomLeftBack;
     unsigned int bottomLeftFront;
 
+    unsigned int topRightBack;
+    unsigned int topRightFront;
+    unsigned int bottomRightBack;
+    unsigned int bottomRightFront;
+
     void updateLeft(unsigned int topLeftBack, unsigned int topLeftFront, unsigned int bottomLeftBack, unsigned int bottomLeftFront);
+    void updateRight(unsigned int topRightBack, unsigned int topRightFront, unsigned int bottomRightBack, unsigned int bottomRightFront);
+
 };
 
 #endif
