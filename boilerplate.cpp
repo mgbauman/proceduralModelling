@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <vector>
 #include <cstdlib>
+#include <time.h>
 
 #include "glm/glm.hpp"
 #include "glm/mat4x4.hpp"
@@ -41,7 +42,16 @@ string LoadSource(const string &filename);
 GLuint CompileShader(GLenum shaderType, const string &source);
 GLuint LinkProgram(GLuint vertexShader, GLuint fragmentShader);
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox);
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec);
+void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength, Box * box);
 
+//Geometry information
+vector<vec3> points, normals;
+vector<unsigned int> indices;
+
+Box *initialBox = new Box();
+
+vector<MCNode*> nodePointers;
 vec2 mousePos;
 bool leftmousePressed = false;
 bool rightmousePressed = false;
@@ -52,7 +62,8 @@ float scaleFactor = 1.f;
 
 Camera* activeCamera;
 
-Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
+//Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
+Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 10));
 // Remember to start this at false for final submission and demo
 bool animate = true;
 
@@ -77,8 +88,21 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GL_TRUE);
         
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-		animate = !animate;
+        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
 	}
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        points.clear();
+        normals.clear();
+        indices.clear();
+        delete initialBox;
+        initialBox = new Box();
+        generateBox(&points, &normals, &indices, 3.f, initialBox);
+        for (int i = 0; i <15; i++)
+        {
+            createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
+        }
+    }
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -253,6 +277,8 @@ bool loadUniforms(GLuint program, mat4 perspective, mat4 modelview)
 						false,
 						&perspective[0][0]);
 
+    glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, &cam.pos[0]);
+
 	return !CheckGLErrors("loadUniforms");
 }
 
@@ -300,7 +326,7 @@ GLFWwindow* createGLFWWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(512, 512, "OpenGL Example", 0, 0);
+    window = glfwCreateWindow(512, 512, "Procedural Spaceship Generator", 0, 0);
     if (!window) {
         cout << "Program failed to create GLFW window, TERMINATING" << endl;
         glfwTerminate();
@@ -574,10 +600,72 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
 
     vector<vec3> offsets = generateOffsets(nodevec, box);
 
-    topLeftBack += offsets[0];
-    topLeftFront += offsets[1];
-    bottomLeftBack += offsets[2];
-    bottomLeftFront += offsets[3];
+
+
+    // Check contrainst for top left back point
+    if (((topLeftBack + offsets[0]).z) > -0.1f) {
+        topLeftBack.z = -0.1f;
+    }
+    else {
+        topLeftBack.z += offsets[0].z;
+    }
+    if (((topLeftBack + offsets[0]).y) < 0.1f) {
+        topLeftBack.y = 0.1f;
+    }
+    else {
+        topLeftBack.y += offsets[0].y;
+    }
+
+    // Check contrainst for front top left point
+    if (((topLeftFront + offsets[1]).z) < 0.1f) {
+        topLeftFront.z = 0.1f;
+    }
+    else {
+        topLeftFront.z += offsets[1].z;
+    }
+    if (((topLeftFront + offsets[1]).y) < 0.1f) {
+        topLeftFront.y = 0.1f;
+    }
+    else {
+        topLeftFront.y += offsets[1].y;
+    }
+
+    // Check contrainst for bottom left back point
+    if (((bottomLeftBack + offsets[2]).z) > -0.1f) {
+        bottomLeftBack.z = -0.1f;
+    }
+    else {
+        bottomLeftBack.z += offsets[2].z;
+    }
+    if (((bottomLeftBack + offsets[2]).y) > -0.1f) {
+        bottomLeftBack.y = -0.1f;
+    }
+    else {
+        bottomLeftBack.y += offsets[2].y;
+    }
+
+    // Check contrainst for front top left point
+    if (((bottomLeftFront + offsets[3]).z) < 0.1f) {
+        bottomLeftFront.z = 0.1f;
+    }
+    else {
+        bottomLeftFront.z += offsets[3].z;
+    }
+    if (((bottomLeftFront + offsets[3]).y) > -0.1f) {
+        bottomLeftFront.y = -0.1f;
+    }
+    else {
+        bottomLeftFront.y += offsets[3].y;
+    }
+/*
+   
+*/
+    box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+    
+    vertices->push_back(bottomLeftFront);
+    vertices->push_back(bottomLeftBack);
+    vertices->push_back(topLeftBack);
+    vertices->push_back(topLeftFront);
 
     //T1
     indices->push_back(vertices->size());
@@ -619,26 +707,296 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     indices->push_back(box.bottomLeftFront);
     indices->push_back(vertices->size() + 1);
 
+    //9
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    //10
+    indices->push_back(vertices->size() + 2);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    normals->push_back(bottomLeftFront - vec3(0, 0, 0));
+    normals->push_back(bottomLeftBack - vec3(0, 0, 0));
+    normals->push_back(topLeftBack - vec3(0, 0, 0));
+    normals->push_back(topLeftFront - vec3(0, 0, 0));
+
+    /*
     normals->push_back(vec3(1, 0, 0));
     normals->push_back(vec3(1, 0, 0));
     normals->push_back(vec3(1, 0, 0));
     normals->push_back(vec3(1, 0, 0));
 
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    */
 
     box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+
+    normals->push_back(bottomLeftFront - vec3(0, 0, 0));
+    normals->push_back(bottomLeftBack - vec3(0, 0, 0));
+    normals->push_back(topLeftBack - vec3(0, 0, 0));
+    normals->push_back(topLeftFront - vec3(0, 0, 0));
+
+    topLeftBack.x += offsets[0].x;
+    topLeftFront.x += offsets[1].x;
+    bottomLeftBack.x += offsets[2].x;
+    bottomLeftFront.x += offsets[3].x;
+
 
     vertices->push_back(bottomLeftFront);
     vertices->push_back(bottomLeftBack);
     vertices->push_back(topLeftBack);
     vertices->push_back(topLeftFront);
 
-    // Generate the new faces -using the new 4 indices and the old 4 indices
-    //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
-    //   then updating each sides indices to the next set (ie old -> new)
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // Right Side
+    box.updateRight((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+    
+    bottomRightFront.y = bottomLeftFront.y;
+    bottomRightFront.z = bottomLeftFront.z;
+
+    bottomRightBack.y = bottomLeftBack.y;
+    bottomRightBack.z = bottomLeftBack.z;
+
+    topRightFront.y = topLeftFront.y;
+    topRightFront.z = topLeftFront.z;
+
+    topRightBack.y = topLeftBack.y;
+    topRightBack.z = topLeftBack.z;
+
+    vertices->push_back(bottomRightFront);
+    vertices->push_back(bottomRightBack);
+    vertices->push_back(topRightBack);
+    vertices->push_back(topRightFront);
+
+    //T1
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomRightFront);
+    indices->push_back(box.topRightFront);
+
+    //T2
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(box.topRightFront);
+
+    //T3
+    indices->push_back(box.topRightBack);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(box.topRightFront);
+
+    //T4
+    indices->push_back(box.topRightBack);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 2);
+
+    //T5
+    indices->push_back(box.topRightBack);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(vertices->size() + 2);
+
+    //T6
+    indices->push_back(box.topRightBack);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(box.bottomRightBack);
+
+    //T7
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomRightFront);
+    indices->push_back(vertices->size() + 1);
+
+    //T8
+    indices->push_back(box.bottomRightBack);
+    indices->push_back(box.bottomRightFront);
+    indices->push_back(vertices->size() + 1);
+
+    //9
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    //10
+    indices->push_back(vertices->size() + 2);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    normals->push_back(bottomRightFront - vec3(0, 0, 0));
+    normals->push_back(bottomRightBack - vec3(0, 0, 0));
+    normals->push_back(topRightBack - vec3(0, 0, 0));
+    normals->push_back(topRightFront - vec3(0, 0, 0));
+
+
+    box.updateRight((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+
+    normals->push_back(bottomRightFront - vec3(0, 0, 0));
+    normals->push_back(bottomRightBack - vec3(0, 0, 0));
+    normals->push_back(topRightBack - vec3(0, 0, 0));
+    normals->push_back(topRightFront - vec3(0, 0, 0));
+
+    topRightBack.x -= offsets[0].x;
+    topRightFront.x -= offsets[1].x;
+    bottomRightBack.x -= offsets[2].x;
+    bottomRightFront.x -= offsets[3].x;
+
+
+    vertices->push_back(bottomRightFront);
+    vertices->push_back(bottomRightBack);
+    vertices->push_back(topRightBack);
+    vertices->push_back(topRightFront);
+    
 }
+/*
+
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
+vec3 topLeftBack = vertices->at(box.topLeftBack);
+vec3 topLeftFront = vertices->at(box.topLeftFront);
+vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
+vec3 bottomLeftFront = vertices->at(box.bottomLeftFront);
+
+vec3 topRightBack = vertices->at(box.topRightBack);
+vec3 topRightFront = vertices->at(box.topRightFront);
+vec3 bottomRightBack = vertices->at(box.bottomRightBack);
+vec3 bottomRightFront = vertices->at(box.bottomRightFront);
+
+// Generate offsets
+// Use the offsets on the current set of points to generate new points
+// Push back new points to vertices
+// Push back new colors to normals
+
+vector<vec3> offsets = generateOffsets(nodevec, box);
+
+// Check contrainst for top left back point
+if (((topLeftBack + offsets[0]).z) > -0.1f) {
+topLeftBack.z = -0.1f;
+}
+else {
+topLeftBack.z += offsets[0].z;
+}
+if (((topLeftBack + offsets[0]).y) < 0.1f) {
+topLeftBack.y = 0.1f;
+}
+else {
+topLeftBack.y += offsets[0].y;
+}
+
+// Check contrainst for front top left point
+if (((topLeftFront + offsets[1]).z) < 0.1f) {
+topLeftFront.z = 0.1f;
+}
+else {
+topLeftFront.z += offsets[1].z;
+}
+if (((topLeftFront + offsets[1]).y) < 0.1f) {
+topLeftFront.y = 0.1f;
+}
+else {
+topLeftFront.y += offsets[1].y;
+}
+
+// Check contrainst for bottom left back point
+if (((bottomLeftBack + offsets[2]).z) > -0.1f) {
+bottomLeftBack.z = -0.1f;
+}
+else {
+bottomLeftBack.z += offsets[2].z;
+}
+if (((bottomLeftBack + offsets[2]).y) > -0.1f) {
+bottomLeftBack.y = -0.1f;
+}
+else {
+bottomLeftBack.y += offsets[2].y;
+}
+
+// Check contrainst for front top left point
+if (((bottomLeftFront + offsets[3]).z) < 0.1f) {
+bottomLeftFront.z = 0.1f;
+}
+else {
+bottomLeftFront.z += offsets[3].z;
+}
+if (((bottomLeftFront + offsets[3]).y) > -0.1f) {
+bottomLeftFront.y = -0.1f;
+}
+else {
+bottomLeftFront.y += offsets[3].y;
+}
+
+topLeftBack.x += offsets[0].x;
+topLeftFront.x += offsets[1].x;
+bottomLeftBack.x += offsets[2].x;
+bottomLeftFront.x += offsets[3].x;
+
+//T1
+indices->push_back(vertices->size());
+indices->push_back(box.bottomLeftFront);
+indices->push_back(box.topLeftFront);
+
+//T2
+indices->push_back(vertices->size());
+indices->push_back(vertices->size()+3);
+indices->push_back(box.topLeftFront);
+
+//T3
+indices->push_back(box.topLeftBack);
+indices->push_back(vertices->size() + 3);
+indices->push_back(box.topLeftFront);
+
+//T4
+indices->push_back(box.topLeftBack);
+indices->push_back(vertices->size() + 3);
+indices->push_back(vertices->size() + 2);
+
+//T5
+indices->push_back(box.topLeftBack);
+indices->push_back(vertices->size() + 1);
+indices->push_back(vertices->size() + 2);
+
+//T6
+indices->push_back(box.topLeftBack);
+indices->push_back(vertices->size() + 1);
+indices->push_back(box.bottomLeftBack);
+
+//T7
+indices->push_back(vertices->size());
+indices->push_back(box.bottomLeftFront);
+indices->push_back(vertices->size()+1);
+
+//T8
+indices->push_back(box.bottomLeftBack);
+indices->push_back(box.bottomLeftFront);
+indices->push_back(vertices->size() + 1);
+
+normals->push_back(vec3(1, 0, 0));
+normals->push_back(vec3(1, 0, 0));
+normals->push_back(vec3(1, 0, 0));
+normals->push_back(vec3(1, 0, 0));
+
+
+box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+vertices->push_back(bottomLeftFront);
+vertices->push_back(bottomLeftBack);
+vertices->push_back(topLeftBack);
+vertices->push_back(topLeftFront);
+
+// Generate the new faces -using the new 4 indices and the old 4 indices
+//   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
+//   then updating each sides indices to the next set (ie old -> new)
+}
+
+*/
+
+
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox)
 {
-    float xoffset = -offsetScale*myBox.sideLength*((float)rand() / (RAND_MAX));
+    
+    float xoffset = -offsetScale*1.5f*myBox.sideLength*((float)rand() / (RAND_MAX))-0.3f;
+    //float xoffset = -myBox.sideLength*offsetScale*3.0f;
     vector<vec3> temp;
     vec3 offsets;
     float direction, zoffset, yoffset;
@@ -799,6 +1157,9 @@ int main(int argc, char *argv[])
 
 	initGL();
 
+    int seed = static_cast<int>(time(0));
+    srand(seed);
+
 	//Initialize shader
 	GLuint program = initShader("vertex.glsl", "fragment.glsl");
 	GLuint vao, vaoSphere, vaoSquare, vaoBox;
@@ -810,16 +1171,11 @@ int main(int argc, char *argv[])
 
 	initVAO(vao, vbo);
 	
-	//Geometry information
-	vector<vec3> points, normals;
-	vector<unsigned int> indices;
-	
-    Box initialBox = Box();
 
-	generateBox(&points, &normals, &indices, 3.f, &initialBox);
+	generateBox(&points, &normals, &indices, 3.f, initialBox);
 	loadBuffer(vbo, points, normals, indices);
 	
-	Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 10));
+	
 	
 	activeCamera = &cam;
 	
@@ -829,9 +1185,9 @@ int main(int argc, char *argv[])
     mat4 model = mat4(1.f);
 
     // Setup Markov Chain Tree for Generation
-    MCNode* levelNode = new MCNode(0.4f, 0.2f, 0.4f);
-    MCNode* inNode = new MCNode(0.4f, 0.2f, 0.4f);
-    MCNode* outNode = new MCNode(0.2f, 0.4f, 0.4f, inNode, nullptr, levelNode);
+    MCNode* levelNode = new MCNode(0.5f, 0.1f, 0.4f);
+    MCNode* inNode = new MCNode(0.5f, 0.1f, 0.4f);
+    MCNode* outNode = new MCNode(0.5f, 0.1f, 0.4f, inNode, nullptr, levelNode);
     outNode->outnode = outNode;
     inNode->innode = inNode;
     inNode->outnode = outNode;
@@ -852,7 +1208,6 @@ int main(int argc, char *argv[])
     MCNode* y3currentNode = levelNode;
     MCNode* z4currentNode = levelNode;
     MCNode* y4currentNode = levelNode;
-    vector<MCNode*> nodePointers;
     nodePointers.push_back(z1currentNode);
     nodePointers.push_back(y1currentNode);
     nodePointers.push_back(z2currentNode);
@@ -862,10 +1217,10 @@ int main(int argc, char *argv[])
     nodePointers.push_back(z4currentNode);
     nodePointers.push_back(y4currentNode);
 
-    for (int i = 0; i < 10; i++)
+    /*for (int i = 0; i <15; i++)
     {
         createNewPoints(initialBox, &points, &normals, &indices, nodePointers);
-    }
+    }*/
 
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))

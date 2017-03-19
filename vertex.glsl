@@ -13,12 +13,17 @@ layout(location = 1) in vec3 VertexNormal;
 
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelviewMatrix;
+
+
 // output to be interpolated between vertices and passed to the fragment stage
 
+out vec3 vecPos;
 out vec3 FragNormal;
 
 void main()
 {
+
+	vecPos = vec3(modelviewMatrix*vec4(VertexPosition,1.f));
 	FragNormal = VertexNormal;
 	gl_Position = perspectiveMatrix*modelviewMatrix*vec4(VertexPosition, 1.0);
 }
