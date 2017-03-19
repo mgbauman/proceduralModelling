@@ -40,6 +40,7 @@ void QueryGLVersion();
 string LoadSource(const string &filename);
 GLuint CompileShader(GLenum shaderType, const string &source);
 GLuint LinkProgram(GLuint vertexShader, GLuint fragmentShader);
+vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox);
 
 vec2 mousePos;
 bool leftmousePressed = false;
@@ -618,16 +619,18 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     indices->push_back(box.bottomLeftFront);
     indices->push_back(vertices->size() + 1);
 
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+    normals->push_back(vec3(1, 0, 0));
+
+
+    box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
     vertices->push_back(bottomLeftFront);
     vertices->push_back(bottomLeftBack);
     vertices->push_back(topLeftBack);
     vertices->push_back(topLeftFront);
-
-    normals->push_back(vec3(1, 0, 0));
-    normals->push_back(vec3(1, 0, 0));
-    normals->push_back(vec3(1, 0, 0));
-    normals->push_back(vec3(1, 0, 0));
-
 
     // Generate the new faces -using the new 4 indices and the old 4 indices
     //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
@@ -858,6 +861,11 @@ int main(int argc, char *argv[])
     nodePointers.push_back(y3currentNode);
     nodePointers.push_back(z4currentNode);
     nodePointers.push_back(y4currentNode);
+
+    for (int i = 0; i < 10; i++)
+    {
+        createNewPoints(initialBox, &points, &normals, &indices, nodePointers);
+    }
 
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))
