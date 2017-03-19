@@ -54,8 +54,7 @@ Camera* activeCamera;
 Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
 // Remember to start this at false for final submission and demo
 bool animate = true;
-bool drawTrack = false;
-bool firstPerson = false;
+
 GLFWwindow* window = 0;
 
 mat4 winRatio = mat4(1.f);
@@ -78,18 +77,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
 		animate = !animate;
-	}
-	if (key == GLFW_KEY_T && action == GLFW_PRESS){
-		drawTrack = !drawTrack;
-	}
-	if (key == GLFW_KEY_F && action == GLFW_PRESS){
-		firstPerson = !firstPerson;
-		if ( !firstPerson){
-			activeCamera->pos = vec3(0,0,7);
-			activeCamera->dir = vec3(0,0,-1);
-			activeCamera->up = vec3(0,1,0);
-			activeCamera->right = vec3(1,0,0);
-		} 
 	}
 }
 
@@ -577,9 +564,13 @@ void createNewPoints(Box box, vector<vec3>* vertices, vector<unsigned int>* indi
     vec3 bottomRightBack = vertices->at(box.bottomRightBack);
     vec3 bottomRightFront = vertices->at(box.bottomRightFront);
 
+
+
     // Generate offsets
     // Use the offsets on the current set of points to generate new points
     // Push back new points to vertices
+    // Push back new colors to normals
+
     // Generate the new faces -using the new 4 indices and the old 4 indices
     //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
     //   then updating each sides indices to the next set (ie old -> new)
@@ -681,7 +672,8 @@ int main(int argc, char *argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		//Clear color and depth buffers (Haven't covered yet)
 		
 		loadUniforms(program, winRatio*perspectiveMatrix*cam.getMatrix(),scale(model, vec3(scaleFactor)));
-		
+
+        loadBuffer(vbo, points, normals, indices);
 		render(vao, 0, indices.size());
 		
         // scene is rendered to the back buffer, so swap to front for display
