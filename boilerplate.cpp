@@ -439,10 +439,10 @@ void generateCylinder(vector<vec3>* positions, vector<vec3>* normals1, vector<un
 	float u = 0.f;
 	
     // Iterate through phi and theta
-    for (double phi = 0.; phi < uDivisions; phi ++) // Azimuth [0, 2PI]
+    for (int phi = 0; phi < uDivisions; phi ++) // Azimuth [0, 2PI]
     {
 		float v = 0.f;
-        for (double theta = 0.; theta < vDivisions; theta++) // Elevation [0, PI]
+        for (int theta = 0; theta < vDivisions; theta++) // Elevation [0, PI]
         {
             vec3 point;
             point.x = r * 2 * cos(v*2*PI);
@@ -459,9 +459,9 @@ void generateCylinder(vector<vec3>* positions, vector<vec3>* normals1, vector<un
         u+=uStep;
     }
 	
-    for(int i=0; i<(uDivisions); i++)
+    for(int i=0; i<(uDivisions-1); i++)
 	{
-		for(int j=0; j<(vDivisions) ; j++)
+		for(int j=0; j<(vDivisions-1) ; j++)
 		{
 			unsigned int p00 = i*vDivisions+j;
 			unsigned int p01 = i*vDivisions+j+1;
@@ -1304,11 +1304,8 @@ int main(int argc, char *argv[])
     generateCylinder(&pointsCylinder, &normalsCylinder, &indicesCylinder, 1.f, vec3(0, 0, 0), 20, 20, 5.f);
     loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
 
-
 	generateBox(&points, &normals, &indices, 3.f, initialBox);
 	loadBuffer(vbo, points, normals, indices);
-	
-	
 	
 	activeCamera = &cam;
 	
@@ -1366,9 +1363,8 @@ int main(int argc, char *argv[])
 		
 		loadUniforms(program, winRatio*perspectiveMatrix*cam.getMatrix(),scale(model, vec3(scaleFactor)));
 
-        loadBuffer(vbo, points, normals, indices);
-		render(vao, 0, indices.size());
         
+		render(vao, 0, indices.size());
         render(vaoCylinder, 0, indicesCylinder.size());
 		
         // scene is rendered to the back buffer, so swap to front for display
@@ -1376,6 +1372,9 @@ int main(int argc, char *argv[])
 
         // sleep until next event before drawing again
         glfwPollEvents();
+
+        loadBuffer(vbo, points, normals, indices);
+        loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
 	}
 
 	// clean up allocated resources before exit
