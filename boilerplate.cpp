@@ -44,10 +44,15 @@ GLuint LinkProgram(GLuint vertexShader, GLuint fragmentShader);
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox);
 void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec);
 void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength, Box * box);
+void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec);
 
 //Geometry information
 vector<vec3> points, normals;
 vector<unsigned int> indices;
+
+//Cylinder buffers
+vector<vec3> pointsCylinder, normalsCylinder;
+vector<unsigned int> indicesCylinder;
 
 Box *initialBox = new Box();
 
@@ -101,6 +106,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         for (int i = 0; i <15; i++)
         {
             createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            createNosePoints(*initialBox, &points, &normals, &indices, nodePointers);
         }
     }
 }
@@ -419,7 +428,7 @@ void generateSphere(vector<vec3>* positions, vector<vec3>* normals, vector<unsig
     
 }
 
-void generateCylinder(vector<vec3>* positions, vector<vec3>* normals, vector<unsigned int>* indices,
+void generateCylinder(vector<vec3>* positions, vector<vec3>* normals1, vector<unsigned int>* indices1,
 					float r, vec3 center, int uDivisions, int vDivisions, float h)
 {
 	// udivisions will be theta
@@ -436,57 +445,36 @@ void generateCylinder(vector<vec3>* positions, vector<vec3>* normals, vector<uns
         for (double theta = 0.; theta < vDivisions; theta++) // Elevation [0, PI]
         {
             vec3 point;
-            point.x = r * 2 * cos(v*2*PI) - 0.05;
+            point.x = r * 2 * cos(v*2*PI);
             point.y = r * 2 * sin(v*2*PI) - 4*r ;
             point.z = -(u*h) + (h/2);
             
             vec3 normal = normalize(point - center);
-            normal = vec3 ( 1, 0 ,0 );
+            //normal = vec3 ( 1, 0 ,0 );
             positions->push_back(point);
-            normals->push_back(normal);
+            normals1->push_back(normal);
             
             v+=vStep;
         }
         u+=uStep;
     }
-	u = 0.f;
-    // Iterate through phi and theta
-    for (double phi = 0.; phi < uDivisions; phi ++) // Azimuth [0, 2PI]
-    {
-		float v = 0.f;
-        for (double theta = 0.; theta < vDivisions; theta++) // Elevation [0, PI]
-        {
-            vec3 point;
-            point.x = r * 2 * cos(v*2*PI) + 0.05;
-            point.y = r * 2 * sin(v*2*PI) - 4*r ;
-            point.z = -(u*h) + (h/2);
-            
-            vec3 normal = normalize(point - center);
-            normal = vec3 ( 1, 0 ,0 );
-            positions->push_back(point);
-            normals->push_back(normal);
-            
-            v+=vStep;
-        }
-        u+=uStep;
-    }
-   
-    for(int i=0; i<(uDivisions*2)-2; i++)
+	
+    for(int i=0; i<(uDivisions); i++)
 	{
-		for(int j=0; j<(vDivisions*2) -2; j++)
+		for(int j=0; j<(vDivisions) ; j++)
 		{
 			unsigned int p00 = i*vDivisions+j;
 			unsigned int p01 = i*vDivisions+j+1;
 			unsigned int p10 = (i+1)*vDivisions + j;
 			unsigned int p11 = (i+1)*vDivisions + j + 1;
 
-			indices->push_back(p00);
-			indices->push_back(p10);
-			indices->push_back(p01);
+			indices1->push_back(p00);
+			indices1->push_back(p10);
+			indices1->push_back(p01);
 
-			indices->push_back(p01);
-			indices->push_back(p10);
-			indices->push_back(p11);
+			indices1->push_back(p01);
+			indices1->push_back(p10);
+			indices1->push_back(p11);
 		}
 	}
 }
@@ -555,6 +543,8 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 
     box->updateLeft(2, 3, 1, 0);
     box->updateRight(6, 7, 5, 4);
+    box->updateNose();
+
     box->sideLength = sideLength;
 
 }
@@ -597,7 +587,6 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     // Use the offsets on the current set of points to generate new points
     // Push back new points to vertices
     // Push back new colors to normals
-
     vector<vec3> offsets = generateOffsets(nodevec, box);
 
 
@@ -991,6 +980,141 @@ vertices->push_back(topLeftFront);
 
 */
 
+// Using same generateOffsets as for wings, but using generated X as the Z part of nose
+void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
+    vec3 topLeftNose = vertices->at(box.topLeftNose);
+    vec3 topRightNose = vertices->at(box.topRightNose);
+    vec3 bottomLeftNose = vertices->at(box.bottomLeftNose);
+    vec3 bottomRightNose = vertices->at(box.bottomRightNose);
+    // Generate offsets
+    // Use the offsets on the current set of points to generate new points
+    // Push back new points to vertices
+    // Push back new colors to normals
+
+    vector<vec3> offsets = generateOffsets(nodevec, box);
+
+
+
+    // Check contrainst for top left point
+    if (((topLeftNose + offsets[0]).z) < 0.1f) {
+        topLeftNose.x = 0.1f;
+    }
+    else {
+        topLeftNose.x += offsets[0].z;
+    }
+    if (((topLeftNose + offsets[0]).y) < -0.5f) {
+        topLeftNose.y = -0.5f;
+    }
+    else {
+        topLeftNose.y += offsets[0].y;
+    }
+
+    topRightNose.x = -topLeftNose.x;
+    topRightNose.y = topLeftNose.y;
+
+    // Check contrainst for bottom left back point
+    if (((bottomLeftNose + offsets[2]).z) < 0.1f) {
+        bottomLeftNose.x = 0.1f;
+    }
+    else {
+        bottomLeftNose.x += offsets[2].z;
+    }
+    if (((bottomLeftNose + offsets[2]).y) > -1.0f) {
+        bottomLeftNose.y = -1.0f;
+    }
+    else {
+        bottomLeftNose.y += offsets[2].y;
+    }
+
+        bottomRightNose.x = -bottomLeftNose.x;
+        bottomRightNose.y = bottomLeftNose.y;
+    
+    /*
+
+    */
+    box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+    vertices->push_back(bottomRightNose);
+    vertices->push_back(bottomLeftNose);
+    vertices->push_back(topLeftNose);
+    vertices->push_back(topRightNose);
+
+    //T1
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(box.topRightNose);
+
+    //T2
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(box.topRightNose);
+
+    //T3
+    indices->push_back(box.topLeftNose);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(box.topRightNose);
+
+    //T4
+    indices->push_back(box.topLeftNose);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 2);
+
+    //T5
+    indices->push_back(box.topLeftNose);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(vertices->size() + 2);
+
+    //T6
+    indices->push_back(box.topLeftNose);
+    indices->push_back(vertices->size() + 1);
+    indices->push_back(box.bottomLeftNose);
+
+    //T7
+    indices->push_back(vertices->size());
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(vertices->size() + 1);
+
+    //T8
+    indices->push_back(box.bottomLeftNose);
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(vertices->size() + 1);
+
+    //9
+    indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    //10
+    indices->push_back(vertices->size() + 2);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
+
+    normals->push_back(bottomRightNose - vec3(0, 0, 0));
+    normals->push_back(bottomLeftNose - vec3(0, 0, 0));
+    normals->push_back(topLeftNose - vec3(0, 0, 0));
+    normals->push_back(topRightNose - vec3(0, 0, 0));
+
+
+    box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+
+    normals->push_back(bottomRightNose - vec3(0, 0, 0));
+    normals->push_back(bottomLeftNose - vec3(0, 0, 0));
+    normals->push_back(topLeftNose - vec3(0, 0, 0));
+    normals->push_back(topRightNose - vec3(0, 0, 0));
+
+    topLeftNose.z -= offsets[0].x;
+    topRightNose.z -= offsets[1].x;
+    bottomLeftNose.z -= offsets[2].x;
+    bottomRightNose.z -= offsets[3].x;
+
+
+    vertices->push_back(bottomRightNose);
+    vertices->push_back(bottomLeftNose);
+    vertices->push_back(topLeftNose);
+    vertices->push_back(topRightNose);
+
+}
 
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox)
 {
@@ -1162,15 +1286,24 @@ int main(int argc, char *argv[])
 
 	//Initialize shader
 	GLuint program = initShader("vertex.glsl", "fragment.glsl");
-	GLuint vao, vaoSphere, vaoSquare, vaoBox;
-	VertexBuffers vbo, vboSphere, vboSquare, vboBox;
+	GLuint vao, vaoCylinder, vaoSquare, vaoBox;
+	VertexBuffers vbo, vboCylinder, vboSquare, vboBox;
 
 	//Generate object ids
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(VertexBuffers::COUNT, vbo.id);
 
+    //Generate object ids
+    glGenVertexArrays(1, &vaoCylinder);
+    glGenBuffers(VertexBuffers::COUNT, vboCylinder.id);
+
+
 	initVAO(vao, vbo);
-	
+    initVAO(vaoCylinder, vboCylinder);
+
+    generateCylinder(&pointsCylinder, &normalsCylinder, &indicesCylinder, 1.f, vec3(0, 0, 0), 20, 20, 5.f);
+    loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
+
 
 	generateBox(&points, &normals, &indices, 3.f, initialBox);
 	loadBuffer(vbo, points, normals, indices);
@@ -1217,11 +1350,15 @@ int main(int argc, char *argv[])
     nodePointers.push_back(z4currentNode);
     nodePointers.push_back(y4currentNode);
 
-    /*for (int i = 0; i <15; i++)
+    for (int i = 0; i <15; i++)
     {
-        createNewPoints(initialBox, &points, &normals, &indices, nodePointers);
-    }*/
+        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
+    }
 
+    for (int i = 0; i < 10; i++)
+    {
+        createNosePoints(*initialBox, &points, &normals, &indices, nodePointers);
+    }
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -1231,6 +1368,8 @@ int main(int argc, char *argv[])
 
         loadBuffer(vbo, points, normals, indices);
 		render(vao, 0, indices.size());
+        
+        render(vaoCylinder, 0, indicesCylinder.size());
 		
         // scene is rendered to the back buffer, so swap to front for display
         glfwSwapBuffers(window);

@@ -41,3 +41,18 @@ void Box::updateRight(unsigned int topRightBack, unsigned int topRightFront, uns
     this->bottomRightFront = bottomRightFront;
 }
 
+
+void Box::updateNose() {
+    this->topRightNose = this->topRightFront;
+    this->topLeftNose = this->topLeftFront;
+    this->bottomRightNose = this->bottomRightFront;
+    this->bottomLeftNose = this->bottomLeftFront;
+}
+
+
+void Box::updateNose(unsigned int topLeftNose, unsigned int topRightNose, unsigned int bottomLeftNose, unsigned int bottomRightNose) {
+    this->topRightNose = topRightNose;
+    this->topLeftNose = topLeftNose;
+    this->bottomRightNose = bottomRightNose;
+    this->bottomLeftNose = bottomLeftNose;
+}
