@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
+    <None Include="fragmentStars.glsl" />
     <None Include="middleware\glm\detail\func_common.inl" />
     <None Include="middleware\glm\detail\func_common_simd.inl" />
     <None Include="middleware\glm\detail\func_exponential.inl" />
@@ -257,6 +258,7 @@
     <None Include="middleware\glm\gtx\vector_query.inl" />
     <None Include="middleware\glm\gtx\wrap.inl" />
     <None Include="vertex.glsl" />
+    <None Include="vertexStars.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.h" />

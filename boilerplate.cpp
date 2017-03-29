@@ -30,6 +30,12 @@
 #include "camera.h"
 #include "Box.h"
 #include "MCNode.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+    #include "stb/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+    #include "stb/stb_image_write.h"
+
 #define PI 3.14159265359
 
 using namespace std;
@@ -55,6 +61,8 @@ vector<vec3> pointsCylinder, normalsCylinder;
 vector<unsigned int> indicesCylinder;
 
 Box *initialBox = new Box();
+
+GLuint starTexture;
 
 vector<MCNode*> nodePointers;
 vec2 mousePos;
@@ -180,6 +188,12 @@ struct VertexBuffers{
 	GLuint id[COUNT];
 };
 
+
+struct StarVertexBuffers {
+    enum { POINTS = 0, NORMALS, UVS, INDICES, COUNT };
+    GLuint id[COUNT];
+};
+
 //Describe the setup of the Vertex Array Object
 bool initVAO(GLuint vao, const VertexBuffers& vbo)
 {
@@ -212,6 +226,48 @@ bool initVAO(GLuint vao, const VertexBuffers& vbo)
 	return !CheckGLErrors("initVAO");		//Check for errors in initialize
 }
 
+//Describe the setup of the Vertex Array Object
+bool initVAOStars(GLuint vao, const StarVertexBuffers& vbo)
+{
+    glBindVertexArray(vao);		//Set the active Vertex Array
+
+    glEnableVertexAttribArray(0);		//Tell opengl you're using layout attribute 0 (For shader input)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::POINTS]);		//Set the active Vertex Buffer
+    glVertexAttribPointer(
+        0,				//Attribute
+        3,				//Size # Components
+        GL_FLOAT,	//Type
+        GL_FALSE, 	//Normalized?
+        sizeof(vec3),	//Stride
+        (void*)0			//Offset
+    );
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::NORMALS]);
+    glVertexAttribPointer(
+        1,				//Attribute
+        3,				//Size # Components
+        GL_FLOAT,	//Type
+        GL_FALSE, 	//Normalized?
+        sizeof(vec3),	//Stride
+        (void*)0			//Offset
+    );
+
+    glEnableVertexAttribArray(2);		//Tell opengl you're using layout attribute 1
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::UVS]);
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(vec2),
+        (void*)0
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo.id[StarVertexBuffers::INDICES]);
+
+    return !CheckGLErrors("initStarsVAO");		//Check for errors in initialize
+}
 
 //Loads buffers with data
 bool loadBuffer(const VertexBuffers& vbo, 
@@ -248,6 +304,46 @@ bool loadBuffer(const VertexBuffers& vbo,
 	return !CheckGLErrors("loadBuffer");	
 }
 
+bool loadBufferStars(const StarVertexBuffers& vbo, const vector<vec3>& points, const vector<vec3> normals,
+    const vector<vec2>& uvs, const vector<unsigned int>& indices)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::POINTS]);
+    glBufferData(
+        GL_ARRAY_BUFFER,				//Which buffer you're loading too
+        sizeof(vec3)*points.size(),	//Size of data in array (in bytes)
+        &points[0],							//Start of array (&points[0] will give you pointer to start of vector)
+        GL_STATIC_DRAW						//GL_DYNAMIC_DRAW if you're changing the data often
+                                            //GL_STATIC_DRAW if you're changing seldomly
+    );
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::NORMALS]);
+    glBufferData(
+        GL_ARRAY_BUFFER,				//Which buffer you're loading too
+        sizeof(vec3)*normals.size(),	//Size of data in array (in bytes)
+        &normals[0],							//Start of array (&points[0] will give you pointer to start of vector)
+        GL_STATIC_DRAW						//GL_DYNAMIC_DRAW if you're changing the data often
+                                            //GL_STATIC_DRAW if you're changing seldomly
+    );
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id[StarVertexBuffers::UVS]);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(vec2)*uvs.size(),
+        &uvs[0],
+        GL_STATIC_DRAW
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo.id[StarVertexBuffers::INDICES]);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(unsigned int)*indices.size(),
+        &indices[0],
+        GL_STATIC_DRAW
+    );
+
+    return !CheckGLErrors("stars loadBuffer");
+}
+
 //Compile and link shaders, storing the program ID in shader array
 GLuint initShader(string vertexName, string fragmentName)
 {	
@@ -258,6 +354,55 @@ GLuint initShader(string vertexName, string fragmentName)
 	GLuint fragmentID = CompileShader(GL_FRAGMENT_SHADER, fragmentSource);
 	
 	return LinkProgram(vertexID, fragmentID);	//Link and store program ID in shader array
+}
+
+//For reference:
+//	https://open.gl/textures
+GLuint createTexture(const char* filename)
+{
+    int components;
+    GLuint texID;
+    int tWidth, tHeight;
+
+    //stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(filename, &tWidth, &tHeight, &components, 0);
+
+    if (data != NULL)
+    {
+        glGenTextures(1, &texID);
+        glBindTexture(GL_TEXTURE_2D, texID);
+
+        if (components == 3)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        else if (components == 4)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tWidth, tHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        //Clean up
+        glBindTexture(GL_TEXTURE_2D, 0);
+        stbi_image_free(data);
+
+        return texID;
+    }
+
+    return 0;	//Error
+}
+
+//Use program before loading texture
+//	texUnit can be - GL_TEXTURE0, GL_TEXTURE1, etc...
+bool loadTexture(GLuint texID, GLuint texUnit, GLuint program, const char* uniformName)
+{
+    glActiveTexture(texUnit);
+    glBindTexture(GL_TEXTURE_2D, texID);
+
+    GLuint uniformLocation = glGetUniformLocation(program, uniformName);
+    glUniform1i(uniformLocation, 0);
+
+    return !CheckGLErrors("loadTexture");
 }
 
 //Initialization
@@ -272,9 +417,17 @@ void initGL()
 	glClearColor(0.f, 0.f, 0.f, 0.f);		//Color to clear the screen with (R, G, B, Alpha)
 }
 
-bool loadUniforms(GLuint program, mat4 perspective, mat4 modelview)
+bool loadUniforms(GLuint program, mat4 perspective, mat4 modelview, GLuint texId = NULL)
 {
 	glUseProgram(program);
+
+    mat4 camMatrix = cam.getMatrix();
+
+    glUniformMatrix4fv(glGetUniformLocation(program, "cameraMatrix"),
+        1,
+        false,
+        &camMatrix[0][0]);
+
 
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelviewMatrix"),
 						1,
@@ -287,6 +440,16 @@ bool loadUniforms(GLuint program, mat4 perspective, mat4 modelview)
 						&perspective[0][0]);
 
     glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, &cam.pos[0]);
+
+    if (texId != NULL) {
+        cout << "not null" << endl;
+
+        loadTexture(texId, GL_TEXTURE0, program, "image");
+    }
+    else {
+        cout << "null" << endl;
+    }
+
 
 	return !CheckGLErrors("loadUniforms");
 }
@@ -303,6 +466,7 @@ void render(GLuint vao, int startElement, int numElements)
 			(void*)0			//Offset
 			);
 
+    //glBindVertexArray(0);
 	CheckGLErrors("render");
 }
 
@@ -318,6 +482,7 @@ void renderBox(GLuint vao, int startElement, int numElements)
 			(void*)0			//Offset
 			);
 
+   // glBindVertexArray(0);
 	CheckGLErrors("renderBox");
 }
 
@@ -376,7 +541,7 @@ void generateSquare(vector<vec3>& vertices, vector<vec3>& normals,
     indices.push_back(0);
 }
 
-void generateSphere(vector<vec3>* positions, vector<vec3>* normals, vector<unsigned int>* indices,
+void generateSphere(vector<vec3>* positions, vector<vec3>* normals, vector<vec2>* uvs, vector<unsigned int>* indices,
 					float r, vec3 center, int uDivisions, int vDivisions)
 {
 	// udivisions will be theta
@@ -401,6 +566,7 @@ void generateSphere(vector<vec3>* positions, vector<vec3>* normals, vector<unsig
             
             positions->push_back(point);
             normals->push_back(normal);
+            uvs->push_back(vec2(u, v));
             
             v+=vStep;
         }
@@ -1281,13 +1447,19 @@ int main(int argc, char *argv[])
 
 	initGL();
 
+   // starTexture = createTexture("stars_milkyway.jpg");
+    starTexture = createTexture("stars_milkyway.jpg");
+
     int seed = static_cast<int>(time(0));
     srand(seed);
 
 	//Initialize shader
 	GLuint program = initShader("vertex.glsl", "fragment.glsl");
-	GLuint vao, vaoCylinder, vaoSquare, vaoBox;
+    GLuint programStars = initShader("vertexStars.glsl", "fragmentStars.glsl");
+    
+	GLuint vao, vaoCylinder, vaoSquare, vaoBox, vaoStars;
 	VertexBuffers vbo, vboCylinder, vboSquare, vboBox;
+    StarVertexBuffers vboStars;
 
 	//Generate object ids
 	glGenVertexArrays(1, &vao);
@@ -1297,9 +1469,21 @@ int main(int argc, char *argv[])
     glGenVertexArrays(1, &vaoCylinder);
     glGenBuffers(VertexBuffers::COUNT, vboCylinder.id);
 
+    //Generate object ids
+    glGenVertexArrays(1, &vaoStars);
+    glGenBuffers(StarVertexBuffers::COUNT, vboStars.id);
 
 	initVAO(vao, vbo);
     initVAO(vaoCylinder, vboCylinder);
+    initVAOStars(vaoStars, vboStars);
+
+    //Sphere Buffers information
+    vector<vec3> starBoxPoints, starBoxNormals;
+    vector<vec2> starBoxUVS;
+    vector<unsigned int> starBoxIndices;
+
+    generateSphere(&starBoxPoints, &starBoxNormals, &starBoxUVS, &starBoxIndices, 400.f, vec3(0, 0, 0), 100, 100);
+    loadBufferStars(vboStars, starBoxPoints, starBoxNormals, starBoxUVS, starBoxIndices);
 
     generateCylinder(&pointsCylinder, &normalsCylinder, &indicesCylinder, 1.f, vec3(0, 0, 0), 20, 20, 5.f);
     loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
@@ -1310,7 +1494,7 @@ int main(int argc, char *argv[])
 	activeCamera = &cam;
 	
 	//float fovy, float aspect, float zNear, float zFar
-	mat4 perspectiveMatrix = perspective(radians(80.f), 1.f, 0.1f, 20.f);
+	mat4 perspectiveMatrix = perspective(radians(80.f), 1.f, 0.1f, 440.f);
 	
     mat4 model = mat4(1.f);
 
@@ -1360,7 +1544,12 @@ int main(int argc, char *argv[])
     while (!glfwWindowShouldClose(window))
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		//Clear color and depth buffers (Haven't covered yet)
-		
+       
+        loadUniforms(programStars, winRatio*perspectiveMatrix*cam.getMatrix(), mat4(1.f), starTexture);
+        loadBufferStars(vboStars, starBoxPoints, starBoxNormals, starBoxUVS, starBoxIndices);
+
+        render(vaoStars, 0, starBoxIndices.size());
+
 		loadUniforms(program, winRatio*perspectiveMatrix*cam.getMatrix(),scale(model, vec3(scaleFactor)));
 
         
