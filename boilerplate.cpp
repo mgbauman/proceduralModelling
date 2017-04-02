@@ -442,14 +442,8 @@ bool loadUniforms(GLuint program, mat4 perspective, mat4 modelview, GLuint texId
     glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, &cam.pos[0]);
 
     if (texId != NULL) {
-        cout << "not null" << endl;
-
         loadTexture(texId, GL_TEXTURE0, program, "image");
     }
-    else {
-        cout << "null" << endl;
-    }
-
 
 	return !CheckGLErrors("loadUniforms");
 }
