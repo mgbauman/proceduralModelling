@@ -460,7 +460,7 @@ void render(GLuint vao, int startElement, int numElements)
 			(void*)0			//Offset
 			);
 
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
 	CheckGLErrors("render");
 }
 
@@ -476,7 +476,7 @@ void renderBox(GLuint vao, int startElement, int numElements)
 			(void*)0			//Offset
 			);
 
-   // glBindVertexArray(0);
+    glBindVertexArray(0);
 	CheckGLErrors("renderBox");
 }
 
@@ -660,6 +660,18 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	vertices->push_back(bottomRightBack);
 	vertices->push_back(topRightBack);
 	vertices->push_back(topRightFront);
+
+    //vec3 center = vec3(0, 0, 0);
+
+    //normals->push_back(bottomLeftFront - center);
+    //normals->push_back(bottomLeftBack - center);
+    //normals->push_back(topLeftBack - center);
+    //normals->push_back(topLeftFront - center);
+
+    //normals->push_back(bottomRightFront - center);
+    //normals->push_back(bottomRightBack - center);
+    //normals->push_back(topRightBack - center);
+    //normals->push_back(topRightFront-center);
 	
 	for( int i =0; i<1; i++){
 		normals->push_back(vec3(1.f,1.f,0.f));
@@ -973,19 +985,41 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     indices->push_back(vertices->size() + 3);
     indices->push_back(vertices->size() + 1);
 
+
+    // Calculate center point of the new box section that has been created to set normals more accurately
+
+    
+    vec3 vertMid = (bottomRightBack + topRightBack) / 2.f;
+    vec3 horiMid = (bottomRightBack + bottomRightFront) / 2.f;
+
+    vec3 centerPoint = vec3(horiMid.z, vertMid.y, bottomRightBack.x - ((offsets[0].x) / 2.f));
+
+/*
+
     normals->push_back(bottomRightFront - vec3(0, 0, 0));
     normals->push_back(bottomRightBack - vec3(0, 0, 0));
     normals->push_back(topRightBack - vec3(0, 0, 0));
     normals->push_back(topRightFront - vec3(0, 0, 0));
 
+*/
+    normals->push_back(centerPoint - bottomRightFront);
+    normals->push_back(centerPoint - bottomRightBack);
+    normals->push_back(centerPoint - topRightBack);
+    normals->push_back(centerPoint - topRightFront);
 
     box.updateRight((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
 
 
-    normals->push_back(bottomRightFront - vec3(0, 0, 0));
-    normals->push_back(bottomRightBack - vec3(0, 0, 0));
-    normals->push_back(topRightBack - vec3(0, 0, 0));
-    normals->push_back(topRightFront - vec3(0, 0, 0));
+    //normals->push_back(bottomRightFront - vec3(0, 0, 0));
+    //normals->push_back(bottomRightBack - vec3(0, 0, 0));
+    //normals->push_back(topRightBack - vec3(0, 0, 0));
+    //normals->push_back(topRightFront - vec3(0, 0, 0));
+
+    
+    normals->push_back(centerPoint - bottomRightFront);
+    normals->push_back(centerPoint - bottomRightBack);
+    normals->push_back(centerPoint - topRightBack);
+    normals->push_back(centerPoint - topRightFront);
 
     topRightBack.x -= offsets[0].x;
     topRightFront.x -= offsets[1].x;
@@ -1249,10 +1283,23 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     indices->push_back(vertices->size() + 3);
     indices->push_back(vertices->size() + 1);
 
+
+
+    vec3 vertMid = (bottomRightNose + topRightNose) / 2.f;
+    vec3 horiMid = (bottomRightNose + bottomLeftNose) / 2.f;
+
+    vec3 centerPoint = vec3(horiMid.x, vertMid.y, bottomLeftNose.z - ((offsets[0].x) / 2.f));
+
     normals->push_back(bottomRightNose - vec3(0, 0, 0));
     normals->push_back(bottomLeftNose - vec3(0, 0, 0));
     normals->push_back(topLeftNose - vec3(0, 0, 0));
     normals->push_back(topRightNose - vec3(0, 0, 0));
+
+
+    //normals->push_back(centerPoint - bottomRightNose);
+    //normals->push_back(centerPoint - bottomLeftNose);
+    //normals->push_back(centerPoint - topLeftNose);
+    //normals->push_back(centerPoint - topRightNose);
 
 
     box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
@@ -1262,6 +1309,13 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     normals->push_back(bottomLeftNose - vec3(0, 0, 0));
     normals->push_back(topLeftNose - vec3(0, 0, 0));
     normals->push_back(topRightNose - vec3(0, 0, 0));
+/*
+
+    normals->push_back(centerPoint - bottomRightNose);
+    normals->push_back(centerPoint - bottomLeftNose);
+    normals->push_back(centerPoint - topLeftNose);
+    normals->push_back(centerPoint - topRightNose);
+*/
 
     topLeftNose.z -= offsets[0].x;
     topRightNose.z -= offsets[1].x;
@@ -1545,10 +1599,10 @@ int main(int argc, char *argv[])
         render(vaoStars, 0, starBoxIndices.size());
 
 		loadUniforms(program, winRatio*perspectiveMatrix*cam.getMatrix(),scale(model, vec3(scaleFactor)));
+        loadBuffer(vbo, points, normals, indices);
 
-        
 		render(vao, 0, indices.size());
-        render(vaoCylinder, 0, indicesCylinder.size());
+       // render(vaoCylinder, 0, indicesCylinder.size());
 		
         // scene is rendered to the back buffer, so swap to front for display
         glfwSwapBuffers(window);
@@ -1556,8 +1610,7 @@ int main(int argc, char *argv[])
         // sleep until next event before drawing again
         glfwPollEvents();
 
-        loadBuffer(vbo, points, normals, indices);
-        loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
+        //loadBuffer(vboCylinder, pointsCylinder, normalsCylinder, indicesCylinder);
 	}
 
 	// clean up allocated resources before exit
