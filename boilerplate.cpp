@@ -48,9 +48,9 @@ string LoadSource(const string &filename);
 GLuint CompileShader(GLenum shaderType, const string &source);
 GLuint LinkProgram(GLuint vertexShader, GLuint fragmentShader);
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox);
-void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec);
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap);
 void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, float sideLength, Box * box);
-void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec);
+void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap);
 
 //Geometry information
 vector<vec3> points, normals;
@@ -76,7 +76,7 @@ float scaleFactor = 1.f;
 Camera* activeCamera;
 
 //Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 1));
-Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 10));
+Camera cam = Camera(vec3(0, 0, -1), vec3(0, 0, 20));
 // Remember to start this at false for final submission and demo
 bool animate = true;
 
@@ -100,9 +100,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
         
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
-	}
+    /*if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers, false);
+	}*/
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS) {
         points.clear();
@@ -113,11 +113,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         generateBox(&points, &normals, &indices, 3.f, initialBox);
         for (int i = 0; i <15; i++)
         {
-            createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
+            createNewPoints(*initialBox, &points, &normals, &indices, nodePointers, (i==14)?true:false);
         }
+
         for (int i = 0; i < 10; i++)
         {
-            createNosePoints(*initialBox, &points, &normals, &indices, nodePointers);
+            createNosePoints(*initialBox, &points, &normals, &indices, nodePointers, (i == 9) ? true : false);
         }
     }
 }
@@ -413,7 +414,8 @@ void initGL()
 	glDepthFunc(GL_LEQUAL);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+    //Lines mode, uncomment to show wireframe
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.f, 0.f, 0.f, 0.f);		//Color to clear the screen with (R, G, B, Alpha)
 }
 
@@ -694,20 +696,20 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	indices->push_back(6);indices->push_back(7);indices->push_back(3);
 	
 	//RIGHT
-	indices->push_back(5);indices->push_back(6);indices->push_back(7);
-	indices->push_back(4);indices->push_back(5);indices->push_back(7);
+	//indices->push_back(5);indices->push_back(6);indices->push_back(7);
+	//indices->push_back(4);indices->push_back(5);indices->push_back(7);
 	
 	//BACK
 	indices->push_back(1);indices->push_back(2);indices->push_back(6);
 	indices->push_back(1);indices->push_back(5);indices->push_back(6);
 
 	//LEFT
-	indices->push_back(1);indices->push_back(2);indices->push_back(3);
-	indices->push_back(0);indices->push_back(1);indices->push_back(3);
+	//indices->push_back(1);indices->push_back(2);indices->push_back(3);
+	//indices->push_back(0);indices->push_back(1);indices->push_back(3);
 
 	//FRONT
-	indices->push_back(0);indices->push_back(4);indices->push_back(7);
-	indices->push_back(0);indices->push_back(7);indices->push_back(3);
+	//indices->push_back(0);indices->push_back(4);indices->push_back(7);
+	//indices->push_back(0);indices->push_back(7);indices->push_back(3);
 
 	//BOTTOM
 	indices->push_back(0);indices->push_back(1);indices->push_back(5);
@@ -744,7 +746,7 @@ void generateNewFaces(vector<vec3>* vertices, vector<unsigned int>* indices, Box
 
 }
 
-void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
     vec3 topLeftBack = vertices->at(box.topLeftBack);
     vec3 topLeftFront = vertices->at(box.topLeftFront);
     vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
@@ -761,7 +763,15 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     // Push back new colors to normals
     vector<vec3> offsets = generateOffsets(nodevec, box);
 
+    int oldtopLeftBack = box.topLeftBack;
+    int oldtopLeftFront = box.topLeftFront;
+    int oldbottomLeftBack = box.bottomLeftBack;
+    int oldbottomLeftFront = box.bottomLeftFront;
 
+    int oldtopRightBack = box.topRightBack;
+    int oldtopRightFront = box.topRightFront;
+    int oldbottomRightBack = box.bottomRightBack;
+    int oldbottomRightFront = box.bottomRightFront;
 
     // Check contrainst for top left back point
     if (((topLeftBack + offsets[0]).z) > -0.1f) {
@@ -868,15 +878,59 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     indices->push_back(box.bottomLeftFront);
     indices->push_back(vertices->size() + 1);
 
-    //9
-    indices->push_back(vertices->size());
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+   
+    if (cap)
+    {
+        //T9
+        indices->push_back(vertices->size());
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
 
-    //10
-    indices->push_back(vertices->size() + 2);
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+        //10
+        indices->push_back(vertices->size() + 2);
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
+    }
+
+    //T9
+    indices->push_back(oldtopLeftBack);
+    indices->push_back(oldbottomLeftBack);
+    indices->push_back(box.topLeftBack);
+
+    //T10
+    indices->push_back(box.topLeftBack);
+    indices->push_back(oldbottomLeftBack);
+    indices->push_back(box.bottomLeftBack);
+
+    //T11
+    indices->push_back(oldbottomLeftBack);
+    indices->push_back(oldbottomLeftFront);
+    indices->push_back(box.bottomLeftBack);
+
+    //T12
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(oldbottomLeftFront);
+    indices->push_back(box.bottomLeftBack);
+
+    //T13
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(oldbottomLeftFront);
+    indices->push_back(oldtopLeftFront);
+
+    //T14
+    indices->push_back(box.bottomLeftFront);
+    indices->push_back(box.topLeftFront);
+    indices->push_back(oldtopLeftFront);
+
+    //T15
+    indices->push_back(oldtopLeftBack);
+    indices->push_back(box.topLeftFront);
+    indices->push_back(oldtopLeftFront);
+
+    //T16
+    indices->push_back(oldtopLeftBack);
+    indices->push_back(box.topLeftFront);
+    indices->push_back(box.topLeftBack);
 
     normals->push_back(bottomLeftFront - vec3(0, 0, 0));
     normals->push_back(bottomLeftBack - vec3(0, 0, 0));
@@ -974,16 +1028,61 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     indices->push_back(box.bottomRightBack);
     indices->push_back(box.bottomRightFront);
     indices->push_back(vertices->size() + 1);
-
+    
     //9
-    indices->push_back(vertices->size());
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+    if (cap)
+    {
+        indices->push_back(vertices->size());
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
 
-    //10
-    indices->push_back(vertices->size() + 2);
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+        //10
+        indices->push_back(vertices->size() + 2);
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
+    }
+
+    //T9
+    indices->push_back(oldtopRightFront);
+    indices->push_back(oldbottomRightFront);
+    indices->push_back(box.topRightFront);
+
+    //T10
+    indices->push_back(box.topRightFront);
+    indices->push_back(oldbottomRightFront);
+    indices->push_back(box.bottomRightFront);
+
+    //T11
+    indices->push_back(oldbottomRightFront);
+    indices->push_back(oldbottomRightBack);
+    indices->push_back(box.bottomRightFront);
+
+    //T12
+    indices->push_back(box.bottomRightBack);
+    indices->push_back(oldbottomRightBack);
+    indices->push_back(box.bottomRightFront);
+
+    //T13
+    indices->push_back(box.bottomRightBack);
+    indices->push_back(oldbottomRightBack);
+    indices->push_back(oldtopRightBack);
+
+    //T14
+    indices->push_back(box.bottomRightBack);
+    indices->push_back(box.topRightBack);
+    indices->push_back(oldtopRightBack);
+
+    //T15
+    indices->push_back(oldtopRightFront);
+    indices->push_back(box.topRightBack);
+    indices->push_back(oldtopRightBack);
+
+    //T16
+    indices->push_back(oldtopRightFront);
+    indices->push_back(box.topRightBack);
+    indices->push_back(box.topRightFront);
+
+
 
 
     // Calculate center point of the new box section that has been created to set normals more accurately
@@ -1175,7 +1274,7 @@ vertices->push_back(topLeftFront);
 */
 
 // Using same generateOffsets as for wings, but using generated X as the Z part of nose
-void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
+void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
     vec3 topLeftNose = vertices->at(box.topLeftNose);
     vec3 topRightNose = vertices->at(box.topRightNose);
     vec3 bottomLeftNose = vertices->at(box.bottomLeftNose);
@@ -1187,6 +1286,10 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
     vector<vec3> offsets = generateOffsets(nodevec, box);
 
+    int oldtopLeftNose = box.topLeftNose;
+    int oldtopRightNose = box.topRightNose;
+    int oldbottomLeftNose = box.bottomLeftNose;
+    int oldbottomRightNose = box.bottomRightNose;
 
 
     // Check contrainst for top left point
@@ -1273,15 +1376,58 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     indices->push_back(box.bottomRightNose);
     indices->push_back(vertices->size() + 1);
 
-    //9
-    indices->push_back(vertices->size());
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+    if (cap)
+    {
+        //9
+        indices->push_back(vertices->size());
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
 
-    //10
-    indices->push_back(vertices->size() + 2);
-    indices->push_back(vertices->size() + 3);
-    indices->push_back(vertices->size() + 1);
+        //10
+        indices->push_back(vertices->size() + 2);
+        indices->push_back(vertices->size() + 3);
+        indices->push_back(vertices->size() + 1);
+    }
+    
+    //T9
+    indices->push_back(oldtopLeftNose);
+    indices->push_back(oldbottomLeftNose);
+    indices->push_back(box.topLeftNose);
+
+    //T10
+    indices->push_back(box.topLeftNose);
+    indices->push_back(oldbottomLeftNose);
+    indices->push_back(box.bottomLeftNose);
+
+    //T11
+    indices->push_back(oldbottomLeftNose);
+    indices->push_back(oldbottomRightNose);
+    indices->push_back(box.bottomLeftNose);
+
+    //T12
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(oldbottomRightNose);
+    indices->push_back(box.bottomLeftNose);
+
+    //T13
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(oldbottomRightNose);
+    indices->push_back(oldtopRightNose);
+
+    //T14
+    indices->push_back(box.bottomRightNose);
+    indices->push_back(box.topRightNose);
+    indices->push_back(oldtopRightNose);
+
+    //T15
+    indices->push_back(oldtopLeftNose);
+    indices->push_back(box.topRightNose);
+    indices->push_back(oldtopRightNose);
+
+    //T16
+    indices->push_back(oldtopLeftNose);
+    indices->push_back(box.topRightNose);
+    indices->push_back(box.topLeftNose);
 
 
 
@@ -1581,12 +1727,12 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i <15; i++)
     {
-        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers);
+        createNewPoints(*initialBox, &points, &normals, &indices, nodePointers, (i == 14) ? true : false);
     }
 
     for (int i = 0; i < 10; i++)
     {
-        createNosePoints(*initialBox, &points, &normals, &indices, nodePointers);
+        createNosePoints(*initialBox, &points, &normals, &indices, nodePointers, (i==9)?true:false);
     }
     // run an event-triggered main loop
     while (!glfwWindowShouldClose(window))
