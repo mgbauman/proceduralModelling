@@ -18,6 +18,7 @@
 #include <vector>
 #include <cstdlib>
 #include <time.h>
+#include <fstream>
 
 #include "glm/glm.hpp"
 #include "glm/mat4x4.hpp"
@@ -120,6 +121,48 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         {
             createNosePoints(*initialBox, &points, &normals, &indices, nodePointers, (i == 9) ? true : false);
         }
+    }
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
+    
+
+        ofstream outputFile;
+        char filepath[250];
+        time_t timer;
+        struct tm* tm_info;
+
+        time(&timer);
+        tm_info = localtime(&timer);
+
+        strftime(filepath, 250, "spaceship%Y-%m-%d-%H-%M-%S.obj", tm_info);
+        puts(filepath);
+
+        outputFile.open(filepath);
+
+        outputFile << "# Vertices" << endl;
+        for (auto v : points)
+        {
+            memset(filepath, 0, sizeof(filepath));
+            sprintf_s(filepath, "v %f %f %f", v.x, v.y, v.z);
+            outputFile << filepath << endl;
+        }
+
+        outputFile << "# Vertex Normals" << endl;
+        for (auto n : normals)
+        {
+            memset(filepath, 0, sizeof(filepath));
+            sprintf_s(filepath, "vn %f %f %f", n.x, n.y, n.z);
+            outputFile << filepath << endl;
+        }
+
+        outputFile << "# Faces" << endl;
+        for (int i = 0; i < indices.size(); i+=3)
+        {
+            memset(filepath, 0, sizeof(filepath));
+            sprintf_s(filepath, "f %d//%d %d//%d %d//%d", indices.at(i)+1, indices.at(i)+1, indices.at(i+1)+1, indices.at(i+1)+1, indices.at(i+2)+1, indices.at(i+2)+1);
+            outputFile << filepath << endl;
+        }
+        outputFile.close();
     }
 }
 
