@@ -10,7 +10,7 @@
 
 
 in vec3 vecPos;
-in vec3 viewPos;
+uniform vec3 viewPos;
 // first output is mapped to the framebuffer's colour index by default
 out vec4 FragmentColour;
 
