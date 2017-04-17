@@ -788,7 +788,7 @@ void generateNewFaces(vector<vec3>* vertices, vector<unsigned int>* indices, Box
 
 
 }
-
+/*
 void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
     vec3 topLeftBack = vertices->at(box.topLeftBack);
     vec3 topLeftFront = vertices->at(box.topLeftFront);
@@ -873,7 +873,7 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     }
 /*
    
-*/
+
     box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
     
     vertices->push_back(bottomLeftFront);
@@ -990,7 +990,7 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     normals->push_back(vec3(1, 0, 0));
     normals->push_back(vec3(1, 0, 0));
     normals->push_back(vec3(1, 0, 0));
-    */
+    
 
     box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
 
@@ -1143,7 +1143,7 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     normals->push_back(topRightBack - vec3(0, 0, 0));
     normals->push_back(topRightFront - vec3(0, 0, 0));
 
-*/
+
     normals->push_back(centerPoint - bottomRightFront);
     normals->push_back(centerPoint - bottomRightBack);
     normals->push_back(centerPoint - topRightBack);
@@ -1175,9 +1175,9 @@ void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, ve
     vertices->push_back(topRightFront);
     
 }
-/*
 
-void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec) {
+*/
+void createNewPoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
 vec3 topLeftBack = vertices->at(box.topLeftBack);
 vec3 topLeftFront = vertices->at(box.topLeftFront);
 vec3 bottomLeftBack = vertices->at(box.bottomLeftBack);
@@ -1198,57 +1198,73 @@ vector<vec3> offsets = generateOffsets(nodevec, box);
 // Check contrainst for top left back point
 if (((topLeftBack + offsets[0]).z) > -0.1f) {
 topLeftBack.z = -0.1f;
+topRightBack.z = -0.1f;
 }
 else {
 topLeftBack.z += offsets[0].z;
+topRightBack.z += offsets[0].z;
 }
 if (((topLeftBack + offsets[0]).y) < 0.1f) {
 topLeftBack.y = 0.1f;
+topRightBack.y = 0.1f;
 }
 else {
 topLeftBack.y += offsets[0].y;
+topRightBack.y += offsets[0].y;
 }
 
 // Check contrainst for front top left point
 if (((topLeftFront + offsets[1]).z) < 0.1f) {
 topLeftFront.z = 0.1f;
+topRightFront.z = 0.1f;
 }
 else {
 topLeftFront.z += offsets[1].z;
+topRightFront.z += offsets[1].z;
 }
 if (((topLeftFront + offsets[1]).y) < 0.1f) {
 topLeftFront.y = 0.1f;
+topRightFront.y = 0.1f;
 }
 else {
 topLeftFront.y += offsets[1].y;
+topRightFront.y += offsets[1].y;
 }
 
 // Check contrainst for bottom left back point
 if (((bottomLeftBack + offsets[2]).z) > -0.1f) {
 bottomLeftBack.z = -0.1f;
+bottomRightBack.z = -0.1f;
 }
 else {
 bottomLeftBack.z += offsets[2].z;
+bottomRightBack.z += offsets[2].z;
 }
 if (((bottomLeftBack + offsets[2]).y) > -0.1f) {
 bottomLeftBack.y = -0.1f;
+bottomRightBack.y = -0.1f;
 }
 else {
 bottomLeftBack.y += offsets[2].y;
+bottomRightBack.y += offsets[2].y;
 }
 
 // Check contrainst for front top left point
 if (((bottomLeftFront + offsets[3]).z) < 0.1f) {
 bottomLeftFront.z = 0.1f;
+bottomRightFront.z = 0.1f;
 }
 else {
 bottomLeftFront.z += offsets[3].z;
+bottomRightFront.z += offsets[3].z;
 }
 if (((bottomLeftFront + offsets[3]).y) > -0.1f) {
 bottomLeftFront.y = -0.1f;
+bottomRightFront.y = -0.1f;
 }
 else {
 bottomLeftFront.y += offsets[3].y;
+bottomRightFront.y += offsets[3].y;
 }
 
 topLeftBack.x += offsets[0].x;
@@ -1296,10 +1312,22 @@ indices->push_back(box.bottomLeftBack);
 indices->push_back(box.bottomLeftFront);
 indices->push_back(vertices->size() + 1);
 
-normals->push_back(vec3(1, 0, 0));
-normals->push_back(vec3(1, 0, 0));
-normals->push_back(vec3(1, 0, 0));
-normals->push_back(vec3(1, 0, 0));
+if (cap)
+{
+	indices->push_back(vertices->size());
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+
+	//10
+	indices->push_back(vertices->size() + 2);
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+}
+vec3 avg = (bottomLeftFront + bottomLeftBack + topLeftBack + topLeftFront) / 4.0f;
+normals->push_back(bottomLeftFront-avg);
+normals->push_back(bottomLeftBack-avg);
+normals->push_back(topLeftBack-avg);
+normals->push_back(topLeftFront-avg);
 
 
 box.updateLeft((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
@@ -1309,15 +1337,226 @@ vertices->push_back(bottomLeftBack);
 vertices->push_back(topLeftBack);
 vertices->push_back(topLeftFront);
 
+// RIGHT SIDE
+topRightBack.x -= offsets[0].x;
+topRightFront.x -= offsets[1].x;
+bottomRightBack.x -= offsets[2].x;
+bottomRightFront.x -= offsets[3].x;
+//T1
+indices->push_back(vertices->size());
+indices->push_back(box.bottomRightFront);
+indices->push_back(box.topRightFront);
+
+//T2
+indices->push_back(vertices->size());
+indices->push_back(vertices->size() + 3);
+indices->push_back(box.topRightFront);
+
+//T3
+indices->push_back(box.topRightBack);
+indices->push_back(vertices->size() + 3);
+indices->push_back(box.topRightFront);
+
+//T4
+indices->push_back(box.topRightBack);
+indices->push_back(vertices->size() + 3);
+indices->push_back(vertices->size() + 2);
+
+//T5
+indices->push_back(box.topRightBack);
+indices->push_back(vertices->size() + 1);
+indices->push_back(vertices->size() + 2);
+
+//T6
+indices->push_back(box.topRightBack);
+indices->push_back(vertices->size() + 1);
+indices->push_back(box.bottomRightBack);
+
+//T7
+indices->push_back(vertices->size());
+indices->push_back(box.bottomRightFront);
+indices->push_back(vertices->size() + 1);
+
+//T8
+indices->push_back(box.bottomRightBack);
+indices->push_back(box.bottomRightFront);
+indices->push_back(vertices->size() + 1);
+
+if (cap)
+{
+	indices->push_back(vertices->size());
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+
+	//10
+	indices->push_back(vertices->size() + 2);
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+}
+avg = (bottomRightFront + bottomRightBack + topRightBack + topRightFront) / 4.0f;
+normals->push_back(bottomRightFront - avg);
+normals->push_back(bottomRightBack - avg);
+normals->push_back(topRightBack - avg);
+normals->push_back(topRightFront - avg);
+
+
+box.updateRight((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+vertices->push_back(bottomRightFront);
+vertices->push_back(bottomRightBack);
+vertices->push_back(topRightBack);
+vertices->push_back(topRightFront);
+
 // Generate the new faces -using the new 4 indices and the old 4 indices
 //   This step involves creating triangles using the two sets of indices (old and new) for each side of the rectangle
 //   then updating each sides indices to the next set (ie old -> new)
 }
 
-*/
+//Oldstyle Nose
+void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
+	vec3 topLeftNose = vertices->at(box.topLeftNose);
+	vec3 topRightNose = vertices->at(box.topRightNose);
+	vec3 bottomLeftNose = vertices->at(box.bottomLeftNose);
+	vec3 bottomRightNose = vertices->at(box.bottomRightNose);
+	// Generate offsets
+	// Use the offsets on the current set of points to generate new points
+	// Push back new points to vertices
+	// Push back new colors to normals
+
+	vector<vec3> offsets = generateOffsets(nodevec, box);
+
+	int oldtopLeftNose = box.topLeftNose;
+	int oldtopRightNose = box.topRightNose;
+	int oldbottomLeftNose = box.bottomLeftNose;
+	int oldbottomRightNose = box.bottomRightNose;
+
+
+	// Check contrainst for top left point
+	if (((topLeftNose + offsets[0]).z) < 0.1f) {
+		topLeftNose.x = 0.1f;
+	}
+	else {
+		topLeftNose.x += offsets[0].z;
+	}
+	if (((topLeftNose + offsets[0]).y) < -0.5f) {
+		topLeftNose.y = -0.5f;
+	}
+	else {
+		topLeftNose.y += offsets[0].y;
+	}
+
+	topRightNose.x = -topLeftNose.x;
+	topRightNose.y = topLeftNose.y;
+
+	// Check contrainst for bottom left back point
+	if (((bottomLeftNose + offsets[2]).z) < 0.1f) {
+		bottomLeftNose.x = 0.1f;
+	}
+	else {
+		bottomLeftNose.x += offsets[2].z;
+	}
+	if (((bottomLeftNose + offsets[2]).y) > -1.0f) {
+		bottomLeftNose.y = -1.0f;
+	}
+	else {
+		bottomLeftNose.y += offsets[2].y;
+	}
+
+	bottomRightNose.x = -bottomLeftNose.x;
+	bottomRightNose.y = bottomLeftNose.y;
+
+	/*
+
+
+	box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+	vertices->push_back(bottomRightNose);
+	vertices->push_back(bottomLeftNose);
+	vertices->push_back(topLeftNose);
+	vertices->push_back(topRightNose);
+	*/
+	//T1
+	indices->push_back(vertices->size());
+	indices->push_back(oldbottomRightNose);
+	indices->push_back(oldtopRightNose);
+
+	//T2
+	indices->push_back(vertices->size());
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(oldtopRightNose);
+
+	//T3
+	indices->push_back(oldtopLeftNose);
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(oldtopRightNose);
+
+	//T4
+	indices->push_back(oldtopLeftNose);
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 2);
+
+	//T5
+	indices->push_back(oldtopLeftNose);
+	indices->push_back(vertices->size() + 1);
+	indices->push_back(vertices->size() + 2);
+
+	//T6
+	indices->push_back(oldtopLeftNose);
+	indices->push_back(vertices->size() + 1);
+	indices->push_back(oldbottomLeftNose);
+
+	//T7
+	indices->push_back(vertices->size());
+	indices->push_back(oldbottomRightNose);
+	indices->push_back(vertices->size() + 1);
+
+	//T8
+	indices->push_back(oldbottomLeftNose);
+	indices->push_back(oldbottomRightNose);
+	indices->push_back(vertices->size() + 1);
+
+	if (cap)
+	{
+	//9
+	indices->push_back(vertices->size());
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+
+	//10
+	indices->push_back(vertices->size() + 2);
+	indices->push_back(vertices->size() + 3);
+	indices->push_back(vertices->size() + 1);
+	}
+
+	vec3 vertMid = (bottomRightNose + topRightNose) / 2.f;
+	vec3 horiMid = (bottomRightNose + bottomLeftNose) / 2.f;
+
+	vec3 centerPoint = vec3(horiMid.x, vertMid.y, bottomLeftNose.z - ((offsets[0].x) / 2.f));
+
+	normals->push_back(bottomRightNose - centerPoint);
+	normals->push_back(bottomLeftNose - centerPoint);
+	normals->push_back(topLeftNose - centerPoint);
+	normals->push_back(topRightNose - centerPoint);
+
+
+	box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
+
+
+	topLeftNose.z -= offsets[0].x;
+	topRightNose.z -= offsets[1].x;
+	bottomLeftNose.z -= offsets[2].x;
+	bottomRightNose.z -= offsets[3].x;
+
+
+	vertices->push_back(bottomRightNose);
+	vertices->push_back(bottomLeftNose);
+	vertices->push_back(topLeftNose);
+	vertices->push_back(topRightNose);
+
+	}
 
 // Using same generateOffsets as for wings, but using generated X as the Z part of nose
-void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
+/*void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned int>* indices, vector<MCNode*>& nodevec, bool cap) {
     vec3 topLeftNose = vertices->at(box.topLeftNose);
     vec3 topRightNose = vertices->at(box.topRightNose);
     vec3 bottomLeftNose = vertices->at(box.bottomLeftNose);
@@ -1371,7 +1610,7 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     
     /*
 
-    */
+    
     box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
 
     vertices->push_back(bottomRightNose);
@@ -1504,7 +1743,7 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     normals->push_back(centerPoint - bottomLeftNose);
     normals->push_back(centerPoint - topLeftNose);
     normals->push_back(centerPoint - topRightNose);
-*/
+
 
     topLeftNose.z -= offsets[0].x;
     topRightNose.z -= offsets[1].x;
@@ -1517,7 +1756,7 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
     vertices->push_back(topLeftNose);
     vertices->push_back(topRightNose);
 
-}
+}*/
 
 vector<vec3> generateOffsets(vector<MCNode*>& nodevec, Box& myBox)
 {

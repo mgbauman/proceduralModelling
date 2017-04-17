@@ -1,0 +1,10 @@
+﻿  glm.cpp
+c:\cpsc\cpsc589\project\proceduralmodelling\middleware\glm\detail\glm.cpp(4): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  MCNode.cpp
+  camera.cpp
+c:\cpsc\cpsc589\project\proceduralmodelling\camera.h(5): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  Box.cpp
+c:\cpsc\cpsc589\project\proceduralmodelling\box.h(4): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  boilerplate.cpp
+c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(22): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  Generating Code...
