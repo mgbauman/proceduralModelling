@@ -51,7 +51,23 @@ void Camera::trackballRight(float radians)
 
 void Camera::zoom(float factor)
 {
-	pos = -dir*length(pos)*factor;
+	//pos = -dir*length(pos)*factor;
+
+
+
+    float dist;
+
+    if ((length(pos) * factor) < 200.f) {
+        dist = length(pos)*factor;
+    }
+    else {
+        dist = 199.f;
+    }
+    pos = -dir*length(pos)*factor;
+    pos = -dir*dist;
+
+
+
 }
 
 mat4 Camera::getMatrix()
