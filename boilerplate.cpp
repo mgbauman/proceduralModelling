@@ -1970,7 +1970,7 @@ int main(int argc, char *argv[])
 	activeCamera = &cam;
 	
 	//float fovy, float aspect, float zNear, float zFar
-	mat4 perspectiveMatrix = perspective(radians(80.f), 1.f, 0.1f, 440.f);
+	mat4 perspectiveMatrix = perspective(radians(80.f), 1.f, 0.1f, 1000.f);
 	
     mat4 model = mat4(1.f);
 
