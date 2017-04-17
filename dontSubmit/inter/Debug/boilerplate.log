@@ -1,16 +1,2 @@
-﻿  boilerplate.cpp
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(73): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(159): warning C4018: '<': signed/unsigned mismatch
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(203): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(600): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(601): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(602): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(653): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(654): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(1937): warning C4101: 'vboSquare': unreferenced local variable
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(1936): warning C4101: 'vaoBox': unreferenced local variable
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(1937): warning C4101: 'vboBox': unreferenced local variable
-c:\cpsc\cpsc589\project\proceduralmodelling\boilerplate.cpp(1936): warning C4101: 'vaoSquare': unreferenced local variable
-cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
-  boilerplate.vcxproj -> C:\CPSC\CPSC589\Project\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe
-  boilerplate.vcxproj -> C:\CPSC\CPSC589\Project\proceduralModelling\dontSubmit\bin\Debug\boilerplate.pdb (Partial PDB)
+﻿  boilerplate.vcxproj -> C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe
+  boilerplate.vcxproj -> C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.pdb (Partial PDB)

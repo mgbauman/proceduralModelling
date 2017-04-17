@@ -706,37 +706,24 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	vertices->push_back(topRightBack);
 	vertices->push_back(topRightFront);
 
-    //vec3 center = vec3(0, 0, 0);
+    vec3 center = vec3(0, 0, 0);
 
-    //normals->push_back(bottomLeftFront - center);
-    //normals->push_back(bottomLeftBack - center);
-    //normals->push_back(topLeftBack - center);
-    //normals->push_back(topLeftFront - center);
+    normals->push_back(bottomLeftFront - center);
+    normals->push_back(bottomLeftBack - center);
+    normals->push_back(topLeftBack - center);
+    normals->push_back(topLeftFront - center);
 
-    //normals->push_back(bottomRightFront - center);
-    //normals->push_back(bottomRightBack - center);
-    //normals->push_back(topRightBack - center);
-    //normals->push_back(topRightFront-center);
+    normals->push_back(bottomRightFront - center);
+    normals->push_back(bottomRightBack - center);
+    normals->push_back(topRightBack - center);
+    normals->push_back(topRightFront-center);
 	
-	for( int i =0; i<1; i++){
-		normals->push_back(vec3(1.f,1.f,0.f));
-	}
-	for( int i =0; i<2; i++){
-		normals->push_back(vec3(0,0,1));
-	}for( int i =0; i<2; i++){
-		normals->push_back(vec3(1.f,1.f,0.f));
-	}
-	for( int i =0; i<2; i++){
-		normals->push_back(vec3(0,0,1));
-	}
+
 	
-	for( int i =0; i<1; i++){
-		normals->push_back(vec3(1.f,1.f,0.f));
-	}
 	
 	//TOP
-	indices->push_back(3);indices->push_back(2);indices->push_back(6);
-	indices->push_back(6);indices->push_back(7);indices->push_back(3);
+	indices->push_back(3); indices->push_back(6); indices->push_back(2);
+	indices->push_back(6); indices->push_back(3); indices->push_back(7);
 	
 	//RIGHT
 	//indices->push_back(5);indices->push_back(6);indices->push_back(7);
@@ -744,7 +731,7 @@ void generateBox(vector<vec3>* vertices, vector<vec3>* normals, vector<unsigned 
 	
 	//BACK
 	indices->push_back(1);indices->push_back(2);indices->push_back(6);
-	indices->push_back(1);indices->push_back(5);indices->push_back(6);
+	indices->push_back(1); indices->push_back(6); indices->push_back(5);
 
 	//LEFT
 	//indices->push_back(1);indices->push_back(2);indices->push_back(3);
@@ -1273,14 +1260,14 @@ bottomLeftBack.x += offsets[2].x;
 bottomLeftFront.x += offsets[3].x;
 
 //T1
+indices->push_back(box.topLeftFront);
 indices->push_back(vertices->size());
 indices->push_back(box.bottomLeftFront);
-indices->push_back(box.topLeftFront);
 
 //T2
 indices->push_back(vertices->size());
-indices->push_back(vertices->size()+3);
 indices->push_back(box.topLeftFront);
+indices->push_back(vertices->size()+3);
 
 //T3
 indices->push_back(box.topLeftBack);
@@ -1289,8 +1276,8 @@ indices->push_back(box.topLeftFront);
 
 //T4
 indices->push_back(box.topLeftBack);
-indices->push_back(vertices->size() + 3);
 indices->push_back(vertices->size() + 2);
+indices->push_back(vertices->size() + 3);
 
 //T5
 indices->push_back(box.topLeftBack);
@@ -1299,13 +1286,13 @@ indices->push_back(vertices->size() + 2);
 
 //T6
 indices->push_back(box.topLeftBack);
-indices->push_back(vertices->size() + 1);
 indices->push_back(box.bottomLeftBack);
+indices->push_back(vertices->size() + 1);
 
 //T7
 indices->push_back(vertices->size());
+indices->push_back(vertices->size() + 1);
 indices->push_back(box.bottomLeftFront);
-indices->push_back(vertices->size()+1);
 
 //T8
 indices->push_back(box.bottomLeftBack);
@@ -1320,8 +1307,8 @@ if (cap)
 
 	//10
 	indices->push_back(vertices->size() + 2);
+    indices->push_back(vertices->size() + 1);
 	indices->push_back(vertices->size() + 3);
-	indices->push_back(vertices->size() + 1);
 }
 vec3 avg = (bottomLeftFront + bottomLeftBack + topLeftBack + topLeftFront) / 4.0f;
 normals->push_back(bottomLeftFront-avg);
@@ -1342,10 +1329,15 @@ topRightBack.x -= offsets[0].x;
 topRightFront.x -= offsets[1].x;
 bottomRightBack.x -= offsets[2].x;
 bottomRightFront.x -= offsets[3].x;
+
+//vertices->push_back(bottomRightFront);    0
+//vertices->push_back(bottomRightBack);     1
+//vertices->push_back(topRightBack);        2
+//vertices->push_back(topRightFront);       3
 //T1
-indices->push_back(vertices->size());
-indices->push_back(box.bottomRightFront);
 indices->push_back(box.topRightFront);
+indices->push_back(box.bottomRightFront);
+indices->push_back(vertices->size());
 
 //T2
 indices->push_back(vertices->size());
@@ -1354,8 +1346,8 @@ indices->push_back(box.topRightFront);
 
 //T3
 indices->push_back(box.topRightBack);
-indices->push_back(vertices->size() + 3);
 indices->push_back(box.topRightFront);
+indices->push_back(vertices->size() + 3);
 
 //T4
 indices->push_back(box.topRightBack);
@@ -1364,8 +1356,8 @@ indices->push_back(vertices->size() + 2);
 
 //T5
 indices->push_back(box.topRightBack);
-indices->push_back(vertices->size() + 1);
 indices->push_back(vertices->size() + 2);
+indices->push_back(vertices->size() + 1);
 
 //T6
 indices->push_back(box.topRightBack);
@@ -1379,20 +1371,21 @@ indices->push_back(vertices->size() + 1);
 
 //T8
 indices->push_back(box.bottomRightBack);
-indices->push_back(box.bottomRightFront);
 indices->push_back(vertices->size() + 1);
+indices->push_back(box.bottomRightFront);
 
 if (cap)
 {
 	indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 1);
 	indices->push_back(vertices->size() + 3);
-	indices->push_back(vertices->size() + 1);
 
 	//10
 	indices->push_back(vertices->size() + 2);
-	indices->push_back(vertices->size() + 3);
-	indices->push_back(vertices->size() + 1);
+    indices->push_back(vertices->size() + 3);
+    indices->push_back(vertices->size() + 1);
 }
+
 avg = (bottomRightFront + bottomRightBack + topRightBack + topRightFront) / 4.0f;
 normals->push_back(bottomRightFront - avg);
 normals->push_back(bottomRightBack - avg);
@@ -1470,10 +1463,10 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
 	box.updateNose((vertices->size() + 2), (vertices->size() + 3), (vertices->size() + 1), (vertices->size()));
 
-	vertices->push_back(bottomRightNose);
-	vertices->push_back(bottomLeftNose);
-	vertices->push_back(topLeftNose);
-	vertices->push_back(topRightNose);
+	vertices->push_back(bottomRightNose); 0
+	vertices->push_back(bottomLeftNose);  1
+	vertices->push_back(topLeftNose);     2
+	vertices->push_back(topRightNose);    3
 	*/
 	//T1
 	indices->push_back(vertices->size());
@@ -1482,8 +1475,8 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
 	//T2
 	indices->push_back(vertices->size());
+    indices->push_back(oldtopRightNose);
 	indices->push_back(vertices->size() + 3);
-	indices->push_back(oldtopRightNose);
 
 	//T3
 	indices->push_back(oldtopLeftNose);
@@ -1492,8 +1485,8 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
 	//T4
 	indices->push_back(oldtopLeftNose);
+    indices->push_back(vertices->size() + 2);
 	indices->push_back(vertices->size() + 3);
-	indices->push_back(vertices->size() + 2);
 
 	//T5
 	indices->push_back(oldtopLeftNose);
@@ -1502,13 +1495,13 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
 	//T6
 	indices->push_back(oldtopLeftNose);
+    indices->push_back(oldbottomLeftNose);
 	indices->push_back(vertices->size() + 1);
-	indices->push_back(oldbottomLeftNose);
 
 	//T7
 	indices->push_back(vertices->size());
+    indices->push_back(vertices->size() + 1);
 	indices->push_back(oldbottomRightNose);
-	indices->push_back(vertices->size() + 1);
 
 	//T8
 	indices->push_back(oldbottomLeftNose);
@@ -1524,8 +1517,8 @@ void createNosePoints(Box &box, vector<vec3>* vertices, vector<vec3>* normals, v
 
 	//10
 	indices->push_back(vertices->size() + 2);
+    indices->push_back(vertices->size() + 1);
 	indices->push_back(vertices->size() + 3);
-	indices->push_back(vertices->size() + 1);
 	}
 
 	vec3 vertMid = (bottomRightNose + topRightNose) / 2.f;
@@ -1976,8 +1969,8 @@ int main(int argc, char *argv[])
 
     // Setup Markov Chain Tree for Generation
     MCNode* levelNode = new MCNode(0.5f, 0.1f, 0.4f);
-    MCNode* inNode = new MCNode(0.5f, 0.1f, 0.4f);
-    MCNode* outNode = new MCNode(0.5f, 0.1f, 0.4f, inNode, nullptr, levelNode);
+    MCNode* inNode = new MCNode(0.4f, 0.1f, 0.5f);
+    MCNode* outNode = new MCNode(0.4f, 0.0f, 0.6f, inNode, nullptr, levelNode);
     outNode->outnode = outNode;
     inNode->innode = inNode;
     inNode->outnode = outNode;
