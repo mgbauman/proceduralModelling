@@ -1,2 +1,8 @@
-﻿  boilerplate.vcxproj -> C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.exe
-  boilerplate.vcxproj -> C:\procmod\proceduralModelling\dontSubmit\bin\Debug\boilerplate.pdb (Partial PDB)
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\inter\Debug\) contains files shared from another project (boilerplate.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Skipping... (no relevant changes detected)
+  glm.cpp
+  camera.cpp
+  MCNode.cpp
+  Box.cpp
+  boilerplate.vcxproj -> C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\spaceshipGenerator.exe
+  boilerplate.vcxproj -> C:\Users\mgbauman\Source\Repos\proceduralModelling\dontSubmit\bin\Debug\spaceshipGenerator.pdb (Partial PDB)
